@@ -1,2 +1,10 @@
 # Rでの形解析
 # 2Dの{0,1}マトリクスの場合
+
+require(devtools)
+library(devtools)
+install_github("ryamada22/Ronlyryamada")
+
+example(my.circ.measure)
+example(my.border)
+example(my.dcird.measure)
