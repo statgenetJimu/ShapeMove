@@ -27,7 +27,7 @@
 2.1.2 DICOMファイル形式のファイルをpythonのpydicomモジュールを使って読み込み、n次元アレイから適当なプロットを作成する
 	調査中ですがpydicomは圧縮された画像が読み込めないようです。(http://stackoverflow.com/questions/24021749/unable-to-get-dicom-image-for-display-in-python)
 	[OsiriXのサンプルファイル](http://www.osirix-viewer.com/datasets/)のファイルはNotImplementedErrorで開けず
-	c++でgdcmかdcmtkが一般的に使われているようなので簡単な方がどちらか見てみます。
+	c++でgdcmかdcmtkが一般的に使われているようなので簡単な方がどちらか見てみます。→ 圧縮画像はひとまず対象外にしてもらってよいです。圧縮しないでデータ提供してもらうようにしますから(yamada)。
 2.1.3 pythonのアレイからDICOMファイルを作る → [http://stackoverflow.com/questions/14350675/create-pydicom-file-from-numpy-array]
 
 3 アレイの扱い(python,c++)
