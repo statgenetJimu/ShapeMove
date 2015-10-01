@@ -52,9 +52,18 @@
 5.3 それらを使って4Dvoxelデータを作る
 5.4 4Dvoxelデータから、各種データファイルフォーマットのテキストファイルを作る
 
-6 C++のモジュール作成→吉井さんに依頼(20150929)
+6 C++のモジュール作成→吉村さんに依頼(20150929)
 6.1 とにかく簡単なモジュールを一つ作る→C++は自由度が高いので制約を入れるために参考にするルールは→ http://www.textdrop.net/google-styleguide-ja/cppguide.xml
 6.1.1 関数ファイルとヘッダファイルとを別ディレクトリに切る
 6.1.2 クラスを定義する
 6.1.3 stdを使う
 6.1.4 iteratorを使う(少し参考：http://d.hatena.ne.jp/ryamada/20150928)
+
+7 離散外微分DECアプリケーション dgpdec (https://github.com/dgpdec/course)
+7.1 dgpdecをLinuxにインストールして動くようにする
+7.2 dgpdecの中でWillmore Flowによる、「球と位相が同じ３次元空間に置かれた２次元多様体～細胞のようなもの)」の三角メッシュ化されたものから、『ほぼ球』へと変形する処理を実行できるようにする
+7.2.1 Rでそれっぽい三角メッシュデータは以下のようにして作れる
+library(devtools)
+install_github("ryamada22/Ronlyryamada")
+example(my.catmull.clark.tri)
+# これに関する説明は　http://d.hatena.ne.jp/ryamada/20150922
