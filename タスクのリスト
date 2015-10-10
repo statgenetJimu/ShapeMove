@@ -16,7 +16,7 @@
 1.1 Workbenchをエンドユーザとして使えるようにする(岩崎さん実施中)　→　使用手順をファイルとして作成する（MITK Segmentation.pdf）
 1.1.1 特に、Threshold 法による領域選択(segmentation)を実行できるようにする
 1.2 MITKベースの開発
-1.2.1 MITKソースコード(githubへのリンク https://github.com/MITK/MITK )から実行可能環境を立ち上げる → 実施手順をファイルとして作成する(LINUXでMITKをソースコードから立ち上げる方法.pdf）
+1.2.1 MITKソースコード(githubへのリンク https://github.com/MITK/MITK )から実行可能環境を立ち上げる → 実施手順をファイルとして作成する(LinuxでMITKをソースコードから立ち上げる方法.txt）
 -> Ubuntuでのコンパイル実施メモ:http://d.hatena.ne.jp/ryamada22/20150925
 1.2.2 MITKWorkbenchのTheshold法によるsegmentationを実行しているソースを見つけてそれを解釈する
 (1.2.3) Threshold法によるsegmentationを実行する別のモジュールを自前作成して作りこむ
