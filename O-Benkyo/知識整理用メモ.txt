@@ -1,5 +1,6 @@
-��Ƃɉ}������A���׋��B
+作業に厭いたら、お勉強。
 
-�m���̐����̂��߂̎����ւ̃����N
+知識の整理のための資料へのリンク
 
--4�����摜�f�[�^��͊E�ň�Ԑi��ł���͔̂]�@�\�C���[�W���O��@�ł���functional MRI (fMRI)�̂悤�ł��B���̉�̓c�[���E�摜�t�@�C���Ɋւ���T���y�C�p�[�̗v�� http://d.hatena.ne.jp/ryamada22/20150921 �ɂ���܂��B
+-画像処理一般についての講義資料を読むと見通しがよくなります→http://www.ele.tottori-u.ac.jp/kairo/pages/vip2013-print-4in1.pdf
+-4次元画像データ解析界で一番進んでいるのは脳機能イメージング手法であるfunctional MRI (fMRI)のようです。その解析ツール・画像ファイルに関する概説ペイパーの要約が http://d.hatena.ne.jp/ryamada22/20150921 にあります。
