@@ -18,8 +18,10 @@
 1.2 MITKベースの開発
 1.2.1 MITKソースコード(githubへのリンク https://github.com/MITK/MITK )から実行可能環境を立ち上げる → 実施手順をファイルとして作成する(LinuxでMITKをソースコードから立ち上げる方法.txt）
 -> Ubuntuでのコンパイル実施メモ:http://d.hatena.ne.jp/ryamada22/20150925
+-> Manjaroでのコンパイル実施メモ(岩崎)→https://github.com/statgenetJimu/ShapeMove/blob/master/Linux%E3%81%A7MITK%E3%82%92%E3%82%BD%E3%83%BC%E3%82%B9%E3%82%B3%E3%83%BC%E3%83%89%E3%81%8B%E3%82%89%E7%AB%8B%E3%81%A1%E4%B8%8A%E3%81%92%E3%82%8B%E6%96%B9%E6%B3%95.txt
 1.2.2 MITKWorkbenchのTheshold法によるsegmentationを実行しているソースを見つけてそれを解釈する
 (1.2.3) Threshold法によるsegmentationを実行する別のモジュールを自前作成して作りこむ
+1.2.4 ROI(region of interest)の面積・体積計算モジュールを見つけ、自前作成できるようにする→中尾
 
 2 画像ファイルの取り扱い (python,c++)
 2.1 nd2ファイル形式(NIKON)
