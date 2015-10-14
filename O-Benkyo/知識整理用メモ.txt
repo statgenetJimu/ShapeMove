@@ -1,6 +1,10 @@
 作業に厭いたら、お勉強。
 
 知識の整理のための資料へのリンク
+-画像について
+--画像処理一般についての講義資料を読むと見通しがよくなります→http://www.ele.tottori-u.ac.jp/kairo/pages/vip2013-print-4in1.pdf
+--4次元画像データ解析界で一番進んでいるのは脳機能イメージング手法であるfunctional MRI (fMRI)のようです。その解析ツール・画像ファイルに関する概説ペイパーの要約が http://d.hatena.ne.jp/ryamada22/20150921 にあります。
 
--画像処理一般についての講義資料を読むと見通しがよくなります→http://www.ele.tottori-u.ac.jp/kairo/pages/vip2013-print-4in1.pdf
--4次元画像データ解析界で一番進んでいるのは脳機能イメージング手法であるfunctional MRI (fMRI)のようです。その解析ツール・画像ファイルに関する概説ペイパーの要約が http://d.hatena.ne.jp/ryamada22/20150921 にあります。
+-コンピュータ言語・プログラミングについて
+--ソースコードを読むときの心得→ http://i.loveruby.net/ja/misc/readingcode.html
+
