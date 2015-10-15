@@ -33,6 +33,7 @@
 	c++でgdcmかdcmtkが一般的に使われているようなので簡単な方がどちらか見てみます。
 	gdcmの方がドキュメントが充実しています。gdcm::readerで画像が読み込めそうです。
 	岡田
+	→gdcmは岩崎さんがWITKのコード読解の過程で、WITKもgdcmに依存しているらしいといっていました(2015/10/14)なので、意思疎通しながらやってください。
 	↑圧縮画像はひとまず対象外にしてもらってよいです。圧縮しないでデータ提供してもらうようにしますから(yamada)。
 	
 2.1.3 pythonのアレイからDICOMファイルを作る → [http://stackoverflow.com/questions/14350675/create-pydicom-file-from-numpy-array]
