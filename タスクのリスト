@@ -82,3 +82,4 @@ example(my.catmull.clark.tri)
 
 9 libmeshライブラリ
 9.1 http://libmesh.github.io/index.html を調査
+9.2 vtkとRとの関係：Rのmkdeパッケージ→example(plotMKDE)
