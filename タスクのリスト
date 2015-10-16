@@ -75,3 +75,7 @@ library(devtools)
 install_github("ryamada22/Ronlyryamada")
 example(my.catmull.clark.tri)
 # これに関する説明は　http://d.hatena.ne.jp/ryamada/20150922
+
+8 MITKにある離散外微分
+8.1 MITKが乗っているITKでは(少なくとも)スムージングのために、表面のメッシュ化とそれに基づく曲率計算と、その曲率を滑らかにする処理とが実装されています
+→これを手がかりに、dgpdecを連結することができそうです：http://www.itk.org/Doxygen/html/itkDiscreteMeanCurvatureQuadEdgeMeshFilter_8h_source.html
