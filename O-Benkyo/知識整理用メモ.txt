@@ -6,6 +6,9 @@
 --4次元画像データ解析界で一番進んでいるのは脳機能イメージング手法であるfunctional MRI (fMRI)のようです。その解析ツール・画像ファイルに関する概説ペイパーの要約が http://d.hatena.ne.jp/ryamada22/20150921 にあります。
 -ITKのページ→http://www.itk.org/Doxygen/html/index.html
 
+-3D画像データのためのVTK
+--パワーポイント資料→https://www.cs.auckland.ac.nz/courses/compsci716s2t/lectures/716Handout2_VTK_1up.pdf
+
 -コンピュータ言語・プログラミングについて
 --ソースコードを読むときの心得→ http://i.loveruby.net/ja/misc/readingcode.html
 
