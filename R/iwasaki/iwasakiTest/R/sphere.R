@@ -1,4 +1,5 @@
-#' æ‚èŠ¸‚¦‚¸,‚RŸŒ³‚Å•ûŒü‚ª‚Í‚Á‚«‚è‚µ‚Ä‚¢‚é‚à‚Ìi‹…{‰~j‚ğR‚Å•`‰æ‚·‚éŠÖ”spehre‚ğì‚Á‚½B
+#' sphere plus cone
+
 #' @export
 #' @examples
 #' library(rgl)

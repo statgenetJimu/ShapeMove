@@ -2,12 +2,12 @@
 % Please edit documentation in R/sphere.R
 \name{sphere}
 \alias{sphere}
-\title{æ‚èŠ¸‚¦‚¸,‚RŸŒ³‚Å•ûŒü‚ª‚Í‚Á‚«‚è‚µ‚Ä‚¢‚é‚à‚Ìi‹…{‰~j‚ğR‚Å•`‰æ‚·‚éŠÖ”spehre‚ğì‚Á‚½B}
+\title{sphere plus cone}
 \usage{
 sphere()
 }
 \description{
-æ‚èŠ¸‚¦‚¸,‚RŸŒ³‚Å•ûŒü‚ª‚Í‚Á‚«‚è‚µ‚Ä‚¢‚é‚à‚Ìi‹…{‰~j‚ğR‚Å•`‰æ‚·‚éŠÖ”spehre‚ğì‚Á‚½B
+sphere plus cone
 }
 \examples{
 library(rgl)
