@@ -8,9 +8,10 @@
 > git-cola: 大した機能はなく、ほとんどコマンドを打つのと同じ作業をGUIでするものです。長所としてはアレルギーが出にくいことくらいだと思います。
 1. 起動したら新規ボタンを押してhttps://github.com/statgenetJimu/StapeMoveを好きなディレクトリにコピーしてくる(git cloneに対応)
 2. ターミナルを開いて
+	cd cloneddirectory
 	git config user.email youraddress@internet.com
 	git config user.name mynickname
-	を実行(your..、my..は好きなものを登録)
+	を実行(cloned..はステップ1に合わせて、your..、my..は好きなものを登録)
 3. ファイルを追加、変更する
 4. Fileから再読み込みを選択する
 5. Untrackedに変更のあったファイルが列挙されるので登録したいものをダブルクリック(git addに対応)
