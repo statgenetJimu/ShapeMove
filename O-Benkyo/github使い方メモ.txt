@@ -1,0 +1,21 @@
+# まずすること
+1. github.comにて自分のアカウントを作る。
+2. https://github.com/statgenetJimu/StapeMoveのソース改変などができるようにCollabolatorとなる(githubアカウント名を山田先生に教えて、Collaborator登録してもらう）
+
+# 使い方
+### クライアントを使う
+> gitコマンドが覚えられないのでクライアントを使い始めました
+> git-cola: 大した機能はなく、ほとんどコマンドを打つのと同じ作業をGUIでするものです。長所としてはアレルギーが出にくいことくらいだと思います。
+1. 起動したら新規ボタンを押してhttps://github.com/statgenetJimu/StapeMoveを好きなディレクトリにコピーしてくる(git cloneに対応)
+2. ターミナルを開いて
+	git config user.email youraddress@internet.com
+	git config user.name mynickname
+	を実行(your..、my..は好きなものを登録)
+3. ファイルを追加、変更する
+4. Fileから再読み込みを選択する
+5. Untrackedに変更のあったファイルが列挙されるので登録したいものをダブルクリック(git addに対応)
+6. コミットメッセージと呼ばれる変更の概要を書いてコミットボタンを押す(git commit -mとかに対応)
+7. Actionsからpushを選択、githubのアカウントとパスワードを聞かれるので入力(git push remote origin master？とかに対応)
+
+### ターミナルを使う
+0.1.2 gitコマンドが打てるようになる(最低限コマンド → http://d.hatena.ne.jp/ryamada/20150918)
