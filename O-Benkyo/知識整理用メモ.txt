@@ -19,3 +19,7 @@
 
 -MITKにpythonでモジュールを作る
 --http://docs.mitk.org/2015.05/mitkPython_Overview.html
+
+-itkは画像を縦横無尽にスキャンするImageIteratorを持つ
+--その基本情報→http://www.itk.org/Doxygen48/html/ImageIteratorsPage.html
+--その完全情報→http://www.itk.org/ItkSoftwareGuide.pdf
