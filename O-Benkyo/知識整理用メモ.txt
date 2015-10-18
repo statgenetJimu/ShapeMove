@@ -16,3 +16,6 @@
 --ドキュメント：http://docs.mitk.org/2015.05/MitkImagePage.html
 ---「メモリ上のどこにあるか～ポインタ」のベクトル(std::vector<ImageDataItemPointer>)として持っている
 ---アクセスするには、Accessorという仕組みを使う。ピクセルの番地でアクセスするにはmitk::ImagePixelReadAccessorクラスのGetPixelByIndex()関数を使うなどする
+
+-MITKにpythonでモジュールを作る
+--http://docs.mitk.org/2015.05/mitkPython_Overview.html
