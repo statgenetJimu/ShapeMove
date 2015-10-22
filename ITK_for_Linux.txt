@@ -1,0 +1,53 @@
+# Linux(Manjaro)でのITKのインストール
+
+# itkのダウンロード
+http://www.itk.org/ITK/resources/software.html　
+からLibrary Source(hoge.tar.gz(Linux用))をダウンロード
+
+# ローカルPCで解凍
+
+# 適当な場所に配置
+今回は "/home/ryamada/"を解凍先として、"/home/ryamada/InsightToolkit-4.8.1/"というディレクトリとその中身とを作りました
+
+# ビルド先のディレクトリを作成
+今回は、"/home/ryamada/ITK-build"というディレクトリを作成しました
+
+# Cmakeする(Cmake Version 3.3.2)
+
+$ cd /home/ryamada/ITK-build
+$ ccmake ../InsightToolkit-4.8.1
+# ccmake はcmakeのちょっとだけオプション選択がしやすいバージョンです
+# まずは、cを推して、configure
+# 少しすると、いったん終わって
+## BUILD_EXASMPLES             ON
+## BUILD_SHARED_LIBS           OFF
+## ITKV3_COMPATIBILITY         OFF
+## ITK_BUILD_DEFAULT_MODULES   ON
+## ITK_WRAP_PYTHON             OFF
+# と示されたので、
+# すべてをONに変えて、もう一度こconfigureしたところ
+## CMake Error at CMakeLists.txt:349 (message):
+##  Wrapping requeired to disable legacy code, please set ITK_LEGACY_SILENT=ON
+# とのエラーが出たので、ITK_WRAP_PYTHONだけOFFにして、再度configure
+# 今度はうまく行ったので、generate を実行
+
+# Makeする
+# CmakeはMakefileを作ってくれるツールですが、
+# /home/ryamada/ITK-build/ 配下にMakefileができたので
+$ make
+# としました
+# 結構、警告は出ましたが、最後までたどり着きました
+## 最後のメッセージは
+## [100%] BUild target ITKv3ThinPlateSplineWarp
+# でした
+
+# ITKを使ってみる
+## /home/ryamada/ITK-build/bin/ 以下に、実行ファイルが多数あるので、片っ端からコマンド発行してみると
+
+$ ./TubeSpatialObject
+$ ./TreeContainer
+
+# 何か意味ありげなものが返ってくるので、成功でしょう
+# あとは
+# ITKにImageを読ませて処理させるところを見極めること
+# 何か自作っぽいものを作ってコンパイルさせなおす(CMakeにどう教えるかも課題ですが…)方法がわかればOKです
