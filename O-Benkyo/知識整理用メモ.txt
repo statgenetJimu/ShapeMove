@@ -23,3 +23,6 @@
 -itkは画像を縦横無尽にスキャンするImageIteratorを持つ
 --その基本情報→http://www.itk.org/Doxygen48/html/ImageIteratorsPage.html
 --その完全情報→http://www.itk.org/ItkSoftwareGuide.pdf
+
+-コンピュータグラフィクスファイル全般について
+--http://www.snap-tck.com/room03/c02/cg/cg.html
