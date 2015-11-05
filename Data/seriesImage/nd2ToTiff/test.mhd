@@ -1,7 +1,8 @@
 ObjectType = Image
 NDims = 4
-DimSize = 512 512 6 27
-ElementType = MET_USHORT
+BinaryData = TRUE
+DimSize = 512 512 27 6
+ElementType = MET_ASCII_CHAR
 HeaderSize = -1
 ElementSize = 1 1 1 1
 ElementSpacing = 1 1 1 1
