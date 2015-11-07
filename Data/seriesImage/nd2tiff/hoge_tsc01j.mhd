@@ -1,0 +1,19 @@
+ObjectType = Image
+NDims = 4
+BinaryData = True
+BinaryDataByteOrderMSB = False
+CompressedData = False
+TransformMatrix = 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
+Offset = 0 0 0 0
+CenterOfRotation = 0 0 0 0
+AnatomicalOrientation = RAI
+ElementSpacing = 1 1 1 1
+DimSize = 512 512 6 6
+ElementType = MET_UCHAR
+ElementDataFile = LIST
+hoge_t00001c01j.raw
+hoge_t00002c01j.raw
+hoge_t00003c01j.raw
+hoge_t00004c01j.raw
+hoge_t00005c01j.raw
+hoge_t00006c01j.raw
