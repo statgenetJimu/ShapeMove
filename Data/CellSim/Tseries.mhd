@@ -1,0 +1,34 @@
+ObjectType = Image
+NDims = 4
+BinaryData = True
+BinaryDataByteOrderMSB = False
+CompressedData = False
+TransformMatrix = 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
+Offset = 0 0 0 0
+CenterOfRotation = 0 0 0 0
+AnatomicalOrientation = RAI
+ElementSpacing = 1 1 1 1
+DimSize = 256 256 11 20
+ElementType = MET_UCHAR
+ElementDataFile = LIST
+T1.raw
+T2.raw
+T3.raw
+T4.raw
+T5.raw
+T6.raw
+T7.raw
+T8.raw
+T9.raw
+T10.raw
+T11.raw
+T12.raw
+T13.raw
+T14.raw
+T15.raw
+T16.raw
+T17.raw
+T18.raw
+T19.raw
+T20.raw
+
