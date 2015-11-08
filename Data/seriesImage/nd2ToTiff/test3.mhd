@@ -1,0 +1,19 @@
+ObjectType = Image
+NDims = 4
+DimSize = 512 512 4 2
+BinaryData = TRUE
+ElementType = MET_USHORT
+HeaderSize = -1
+ElementSize = 1 1 1 1
+ElementSpacing = 1 1 1 1
+ElementByteOrderMSB = True
+ElementDataFile = LIST
+121018_LysM-EGFP007_t00001z01c01.tif
+121018_LysM-EGFP007_t00002z02c01.tif
+121018_LysM-EGFP007_t00003z03c01.tif
+121018_LysM-EGFP007_t00004z04c01.tif
+121018_LysM-EGFP007_t00001z01c01.tif
+121018_LysM-EGFP007_t00002z02c01.tif
+121018_LysM-EGFP007_t00003z03c01.tif
+121018_LysM-EGFP007_t00004z04c01.tif
+
