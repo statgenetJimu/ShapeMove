@@ -44,6 +44,7 @@ ROIのラベル番号はROIを右クリックして[ROI properties]を開き、S
 軌跡を消すにはTrackingウィンドウを開いて目的のROIを右クリックし、[Unselect All]を選ぶ。すると、軌跡と中の塗りつぶしが消える。
 中に中心を表す十字マークが表示されているようであればそれも消す必要がある。方法は歯車のマークをクリックし、Tracking Optionsが開く。[Display]タブをクリックし、[Show centroid]のチェックを外し、また下に5つ並んでいるチェックボックスのうち[Show only selected tracks]のみが選択された状態にする。
 バイナリ化は[Binary]->[Define Threshold]でDifine Thresholdウィンドウを開いて、Saveコマンドの左にあるFull Image/Use ROIコマンド(ROIのマーク)をクリックして有効にする。(これで再生をすると警告が出るが意味がよくわからなかったのでYesを選択した。今の所問題は出ていない。)画像ウィンドウの右に並んでいるコマンドから[Turn ROI On/Off](ROIのマーク)を選んでをEnable Dynamic Threshold(画像ウィンドウ中の上に並んでいるアイコンの一つ)を押してもできる。ROI内とROIの輪郭の色が異なるのが気になる場合はROIを右クリックして[ROI Properties]から輪郭の色を赤に変えれば良い。変更はROI Propertiesにある上の方の色指定部分からできる。
+バイナリ化を各フレームごとに行うためにはThresholdを動画ファイルに適用している段階でPreviewのチェックボックスをOnにしておく必要がある。チェックボックスがOnになっているフレームでのみROIが更新されるので、一番初めに作業をする際はあらかじめ別の画像ファイルを使うなどしてチェックボックスをOnにしておく必要がある。
 
 ZT変換
 変換したいファイルを一度[File]->[Import/Export]->[Export ND Document]でTIFかjpegに変換する(jpegへの変換は非常に時間が掛かる)。この時に出てきたウィンドウのIndex orderをt,zの並びからz,t変える。次に[File]->[Open]で先ほど変換したファイルの中一枚を選ぼうとすると「この画像を含む一連のデータをND Documentに変換するか？」とダイアログボックスが出てくるので[Convert]を選択。Define Manuallyを選択した状態で下のTime、Z seriesの順にして読み込むとデータラベルが逆転する。開いたファイルを[File]->[Save As]から保存すればZとTが入れ替わったnd2の動画データができる。
