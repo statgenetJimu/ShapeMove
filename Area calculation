@@ -1,0 +1,27 @@
+//メッシュ化データが座標で与えられているものとする
+//データは閉じていて、順番に並んでいることが必要
+
+#include <vector>
+#include <cmath>
+
+using namespace std;
+
+class Zahyo {
+    public:
+    int x, y;
+    Zahyo(int a, int b) { x = a; y = b;}
+};
+
+float MeshAreaCalculation(const vector<Zahyo> &MeshData){
+    
+    float Area = 0;
+   	auto itr = MeshData.begin();
+    while(itr != MeshData.end()-1){
+		Area += ((itr->x)*((itr+1)->y)) - ((itr->y)*((itr+1)->x));
+        itr++;
+    }
+   
+    Area += itr->x*MeshData[0].y-itr->y*MeshData[0].x;
+    Area = abs(Area)/2;
+    return Area;
+}
