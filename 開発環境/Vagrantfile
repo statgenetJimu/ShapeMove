@@ -1,0 +1,56 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+	config.vm.box = "ubuntu/trusty64"
+
+	# ホストとのファイル共有： "ホストファイル", "ゲストファイル", type
+	config.vm.synced_folder ".", "/vagrant", disabled: true
+	config.vm.synced_folder "data/", "/vagrant_data", type: "virtualbox"
+
+	# VirtualBoxの設定
+	# ホストとプライベートネットワークで接続する
+	config.vm.network "private_network", ip: "192.168.33.10"
+	# ポートフォワーディング(ホストの8080番をゲストの80番に転送)
+	# config.vm.network "forwarded_port", guest: 80, host: 3000
+
+	config.vm.provider "virtualbox" do |vb|
+		vb.customize ["modifyvm", :id, "--ostype", "Ubuntu_64"]
+		vb.name = "ubuntu14.04-x11"
+		vb.cpus = "1"
+		vb.memory = "1536"
+		vb.gui = true
+	end
+
+	# GuestAdditionsの設定
+	if Vagrant.has_plugin?("vagrant-vbguest")
+		# set auto_update to false, if you do NOT want to check the correct 
+		# additions version when booting this machine
+		config.vbguest.auto_update = false
+		# do NOT download the iso file from a webserver
+		config.vbguest.no_remote = true
+	end
+
+	# プロビジョニング
+	# default: stdin: is not a ttyエラーが出ないようにする
+	config.vm.provision "fix-no-tty", type: "shell" do |s|
+		s.privileged = false
+		s.inline = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
+	end
+
+	config.vm.provision "shell", inline: <<-SHELL
+		# 日本のミラーを使う
+		sudo sed -i.bak -e "s%http://us.archive.ubuntu.com/ubuntu/%http://ftp.iij.ad.jp/pub/linux/ubuntu/archive/%g" /etc/apt/sources.list
+		sudo apt-get update
+		sudo apt-get -y upgrade
+		sudo apt-get -y autoremove
+		# http://askubuntu.com/questions/213678/how-to-install-x11-xorg
+		sudo apt-get install -y xorg openbox
+		# sudo apt-get -y --force-yes install xserver-xorg xinit
+	SHELL
+	config.vm.provision "docker" do |d|
+		d.pull_images "ubuntu:14.04"
+	end
+
+end
