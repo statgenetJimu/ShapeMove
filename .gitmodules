@@ -1,0 +1,3 @@
+[submodule "src/dgpdec"]
+	path = src/dgpdec
+	url = https://github.com/dgpdec/course.git
