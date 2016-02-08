@@ -1,0 +1,129 @@
+ver4.0(今使っているversion)のマニュアル
+http://www.torontomicrofluidics.ca/cms/manuals/niselements.pdf
+
+●起動方法
+山田先生のノートパソコンに入っているNIS-elementを起動する方法。
+NIS-elementはライセンスの入っている(?)USBメモリをさした状態出ないと起動しない。USBメモリは研究室の扉の横マグネットで止めてある象の柄の入った赤い入れ物の中にある。青いUSBメモリ。
+挿したら、NIS-elements AR Analysis 4.30.01 64-bitをダブルクリックで起動する。
+
+
+
+
+現時点ではROIの設定まではGUIを使った操作を想定している。以下その方法について。
+
+●ROIの自動検出(マニュアルP99)
+[ROI]、[Simple ROI editor] [Edit ROIs in Time](P98 6.5.5)で使える。
+[Simple ROI editor]で出てきたツールバー中の[Auto Detect All]をクリックするとROIの一斉検出ができる。
+左クリックをするとその場所を含むROIができる。右クリックで決定。
+決定したROIは掴んで動かせる。
+マウスホイールをスクロール(もしくはPage up,Page down)することでROIの範囲を調節することができる。Cで凹部をなめらかにし、Oで凸部をなめらかにできる。SもしくはPで分割することができる(基準はよく分からない)。
+
+●ROIの自動追跡
+Tracking(P160 9.18)
+[View]->[Analysis Contorols]->[Tracking]
+[Tracikng]コントロールウィンドウを使えば生きている細胞など動くものを自動で測定できる。
+[Define New ROI](Trackingウィンドウ左上）でSimple ROI Editorのツールバーが開き、ROIが作成できる。作成したROIの情報はTrackingウィンドウに読み込まれる。ツールバーを消すとTrackingウィンドウが操作できるようになる。[Track Autodetected ROIs]でROIの追跡が始まる。
+ROIが大きく動く場合はROIの追跡画面が止まることがある。その時は、ドラッグできる点があるのでそれをROIで囲みたい対象の異動先に持って行って[Track Autodetected ROIs]をクリックすればまた追跡が再開する。
+出力したいROIを選択した状態で[Export](Trackingウィンドウ右上)->[Data to Excel]でExcelにデータを出力できる。
+画面にROIが反映されている状態で[File]->[Save As]でROIの情報付きnd2ファイルが出力できる。
+
+●動くROIを設定する
+作成したROIを右クリックして、ROIs change over Timeにチェックを入れる（ROIs are Globalだと動画中動かないROIが設定される）。動画を動かして対象がROIから出るようであれば、動画を止めてROIを動かす。同様の作業を繰り返す。ROIの位置に変更を加えたフレーム間ではROIは等速で動く。軌跡はスムージングされている。
+
+
+
+
+以上でROIを設定することができる。
+以下ROIの設定されたファイルのバイナリ化Tifファイルを出力する方法。この部分はマクロを使って行うが、調べる過程でGUIによる方法も調べたのでいかにまとめてある。
+
+●_ND_Export
+Exportしたいnd2ファイルを開いた状態でコマンドラインを開き、”c:¥program Files¥NIS-Elements¥nis_ar.exe” -c “_ND_Export();”と打って実行すると出力用ウィンドウが開く。
+[File]->[Import/Export]->[Export ND Document]でも出力用ウィンドウは開く。”_ND_ExportToTIFF();”コマンドというのもあるらしいが使えなかった（原因不明）。
+ND Exportの時にInsert Overlaysにチェックを入れると出力された画像にROIも出力される。ただ、そのまま出力すると出力ファイルにはROIのラベルと移動の軌跡も一緒に出力されてしまう。
+ROIのラベル番号はROIを右クリックして[ROI properties]を開き、Show Labelsのチェックを外せば消える。
+軌跡を消すにはTrackingウィンドウを開いて目的のROIを右クリックし、[Unselect All]を選ぶ。すると、軌跡と中の塗りつぶしが消える。
+中に中心を表す十字マークが表示されているようであればそれも消す必要がある。方法は歯車のマークをクリックし、Tracking Optionsが開く。[Display]タブをクリックし、[Show centroid]のチェックを外し、また下に5つ並んでいるチェックボックスのうち[Show only selected tracks]のみが選択された状態にする。
+バイナリ化は[Binary]->[Define Threshold]でDifine Thresholdウィンドウを開いて、Saveコマンドの左にあるFull Image/Use ROIコマンド(ROIのマーク)をクリックして有効にする。(これで再生をすると警告が出るが意味がよくわからなかったのでYesを選択した。今の所問題は出ていない。)画像ウィンドウの右に並んでいるコマンドから[Turn ROI On/Off](ROIのマーク)を選んでをEnable Dynamic Threshold(画像ウィンドウ中の上に並んでいるアイコンの一つ)を押してもできる。ROI内とROIの輪郭の色が異なるのが気になる場合はROIを右クリックして[ROI Properties]から輪郭の色を赤に変えれば良い。変更はROI Propertiesにある上の方の色指定部分からできる。
+バイナリ化を各フレームごとに行うためにはThresholdを動画ファイルに適用している段階でPreviewのチェックボックスをOnにしておく必要がある。チェックボックスがOnになっているフレームでのみROIが更新されるので、一番初めに作業をする際はあらかじめ別の画像ファイルを使うなどしてチェックボックスをOnにしておく必要がある。
+
+Exportした画像はそのうち１枚をNIS-elementで開くとnd2形式の動画ファイルに変換するかを聞かれるので、Yesでnd2動画ファイルも作成することができる。
+
+
+
+
+以下、Tifファイルでの出力をマクロで行う方法と、そのマクロの作成、編集法。
+
+●マクロ化
+Macro->recordで記録できる。
+Historyから作成することもできる。
+Writing/Editing a Macroから作成、編集することもできる。
+
+ただ画像にROIを重ねてExportする過程をMacroで記録してそれを後からRunしても、出力される画像にはROIのデータが載っていない。もしかしたら、出力の際の[Insert Overlays]の設定がマクロで記録したコマンドからだとできないのかもしれない。
+ROIの部分だけバイナリ化して出力までの作業をMacroで記録しても出力される画像にはバイナリはおろかROIすら載っていない。また、途中のバイナリ化作業はGUI上で動いている様子を見る分には行われているようだが、バイナリ化が適用されているのはROI内ではなく画面全体になっている。
+
+
+
+以下その部分を修正したマクロ。
+
+●Binary化について
+追跡済みのROIが反映されたファイルから各タイムフレームにつき目的の細胞部分だけがBainary化されたファイルを出力するマクロは完成した。
+
+OpenDocument("C:\Program Files\NIS-Elements\Images\ROIfile.nd2",0);
+DefineThresholdIntensity(0,2088,0);
+DefineThresholdProcessing(0,0,0,0);
+DefineThresholdRestrictionSize(0,0.000000,360.000000);
+DefineThresholdRestrictionCircularity(1,0.000000,1.000000);
+ThresholdND(1,1,1);
+ImageSaveAs("C:\Program Files\NIS-Elements\Images\Binaryfile.nd2",31,0);
+ CloseCurrentDocument(QUERYSAVE_ASK);
+ND_Export("C:\Program Files\NIS-Elements\Images\Binaryfile.nd2","C:\Program Files\NIS-Elements\Images\result\","20151008-lysm-egfp allergy005v3","tif",2,0,1);
+
+C:\Program Files\NIS-Elements\Images\のフォルダ中にある”ROIfile.nd2”のROI部分のみをバイナリ化で赤くし、そのファイルを同フォルダに”Binaryfile.nd2”という形で保存する。その後、”Binaryfile.nd2”を各タイムフレームごとにtif形式でC:\Program Files\NIS-Elements\Images\result\に出力するマクロ。各名前の部分を変更すれば入力、出力ファイルは自由に変更できる。
+実行方法は、まずMacroタブを開いて、Run Macro From Fileを選ぶ。開いたウインドウの一覧からROItoExporttifを選択すれば良い。
+Macroの編集はMacroタブのOpenで編集したいファイルを開いたのちにEditを選択すれば良い。
+・ND_Exportについて
+ND_Export(
+	char *Filename,
+	char *Dest_Directory,
+	char *Prefix,
+	char *FileExtension,
+	int ChannelExportType,
+	int ApplyLuts,
+	int InsertOverlay
+);
+で細かい挙動を指定することができる。ApplyLutsとInsertOverlayは0以外の値を指定すれば適用できる。
+入力ファイルにはバイナリ化まで反映されたnd2ファイルを用いる必要があるため、この関数の直前で一度作業したファイルを保存する必要がある。
+他関数の詳しい説明はHelpタブのContentsから飛べる電子マニュアルを参照。
+
+
+
+以下、他に調べている過程でまとめたこと
+
+●ROIをBinaryに変える
+[ROI]->[Swap Binary with ROI]でできる。ただし実行時に表示されているフレームに対してしか出来ない。
+
+●ROIをpngファイルで出力する
+[ROI]->[Save ROI As]でファイルの種類としてpngを選ぶ。
+
+●３次元画像の表示
+[View]->[Image]->[Volume View](もしくは画像ウィンドウの虫眼鏡のようなマーク)で表示できる。
+
+●Edit ROI in time(おそらく使えない)
+[Edit ROIs in time]コマンドから行う。このコマンドは右のimage toolbarの[Turn ROI on/off]ボタンのcontextual menuからアクセスできると書いてあったが、contextual menuの中にそのようなものはなかった。Local Optionが入っていないのが原因?([Tracking]と[Local Option]が必要らしい(p98))
+
+●Local Option(おそらく入っていない)
+Edit ROIs in Timeなどに必要。
+NIS-Elementをインストールするときにインストールするかどうか選択できる(P2)。後からインストールする場合は[Start menu > Programs > NIS-Elements AR]に行き、[Modify installation]コマンドを選び、installation wizardの指示に従って加えたいアイテムのチェックボックスをオンにして、インストールを終える。
+
+●ZT変換
+変換したいファイルを一度[File]->[Import/Export]->[Export ND Document]でTIFかjpegに変換する(jpegへの変換は非常に時間が掛かる)。この時に出てきたウィンドウのIndex orderをt,zの並びからz,t変える。次に[File]->[Open]で先ほど変換したファイルの中一枚を選ぼうとすると「この画像を含む一連のデータをND Documentに変換するか？」とダイアログボックスが出てくるので[Convert]を選択。Define Manuallyを選択した状態で下のTime、Z seriesの順にして読み込むとデータラベルが逆転する。開いたファイルを[File]->[Save As]から保存すればZとTが入れ替わったnd2の動画データができる。
+
+
+
+
+以降やること
+
+・全自動ROI検出の正確化
+画面中のROIを一気に全部検出する機能があるのだが、これだと目的の細胞よりはるかに大きい塊を一斉に検出してしまうなど正確でない。パラメータをいじることで正確にできるのであればそれを行う。ただ難しそうなのでROIの検出は手動でやったほうがいいかもしれない。
+・自動追跡だけでは追い切れない細胞が多いので、手動で修正を加える方法をマニュアル化する。
+追跡している細胞が一気に動く場合や、何か手前の物体（例えば血管など）に隠れて一度画面から消える場合など、その後追跡することが難しい。そのような場合は手動で追跡に補正をかける必要がある。補正をかける機能があるのは分かっているが、方法とその性能がわからないのでその部分を調べる。
