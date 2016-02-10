@@ -1,0 +1,56 @@
+my.curvature.cot <- function(vertices,faces.v){
+  n.v <- length(vertices)
+  ret <- rep(0*Hk,n.v)
+  # 三角形の面積
+  edge1 <- vertices[faces.v[2,]]-vertices[faces.v[1,]]
+  edge2 <- vertices[faces.v[3,]]-vertices[faces.v[1,]]
+  tmp <- edge1 * edge2
+  tmp2 <- Mod(Im(tmp))
+  #tmp2 <- i(tmp)+j(tmp)+k(tmp)
+  #inv.f <- which(tmp2<0)
+  #faces.v[2:3,inv.f] <- rbind(faces.v[3,inv.f],faces.v[2,inv.f])
+ 	A.f <- (tmp2)/2
+  # 頂点周囲の三角形面積の和
+  val <- rep(A.f,each=3)
+  addr <- c(faces.v)
+  tmp.out <- my.vector.access(val,addr)
+  A.v <- tmp.out[[2]][,1] # 頂点周囲面積和
+  
+  for(i in 1:3){
+		v.ord <- ((1:3)+i+1) %% 3 + 1
+		k1 <- faces.v[v.ord[1],]
+		k2 <- faces.v[v.ord[2],]
+		k3 <- faces.v[v.ord[3],]
+		# 頂点四元数
+		v1 <- vertices[k1]
+		v2 <- vertices[k2]
+		v3 <- vertices[k3]
+		
+		# edge 四元数
+		u1 <- v2-v1
+		u2 <- v3-v1
+    
+    # 対向辺
+    u3 <- v3-v2
+    #u3.len <- Mod(Im(u3))
+		# edge 四元数(純虚四元数)の積は実部がドット積、虚部がクロス積ベクトル
+		u12 <- u1 * u2
+		cotAlpha <- ((-Re(u12))/Mod(Im(u12)))
+    
+    val <- c(cotAlpha * u3, cotAlpha * (-u3))
+    addr <- c(k2,k3)
+    tmp.out <- my.vector.access(t(as.matrix(val)),addr)
+    tmp.val <- as.quaternion(t(tmp.out[[2]]))
+    ret[tmp.out[[1]]] <- ret[tmp.out[[1]]] + tmp.val
+  }
+  ret.vec <- -ret/(4*A.v)
+  ret.face.re <- rho.fromVtoTri(Re(ret.vec),faces.v)
+  ret.face.i <- rho.fromVtoTri(i(ret.vec),faces.v)
+  ret.face.j <- rho.fromVtoTri(j(ret.vec),faces.v)
+  ret.face.k <- rho.fromVtoTri(k(ret.vec),faces.v)
+  ret.face <- ret.face.re + Hi * ret.face.i + Hj * ret.face.j + Hk * ret.face.k
+  
+  
+  dir <- sign(Re(tmp * ret.face))
+  return(list(norm.v=ret.vec,norm.face=ret.face,dir=dir))
+}
