@@ -1,0 +1,719 @@
+---
+title: "球面の変形～Rで学ぶ曲面の四元数共形変換"
+author: "ryamada"
+date: "Saturday, April 04, 2015"
+output: html_document
+---
+# 球面の変形～Rで学ぶ曲面の四元数共形変換～
+
+
+```{r}
+library(onion) # 四元数
+library(geometry) # 3次元ベクトル・クロス積関数
+library(Matrix) # 疎行列
+library(rgl) # 3Dプロット
+library(knitr) # 文書作成・画像埋め込み
+library(igraph) # グラフ理論
+```
+
+```{r}
+my.sphere.tri.mesh <- function(n.psi=30){
+  thetas <- list()
+  psis <- seq(from=-pi/2,to=pi/2,length=n.psi)
+	d.psis <- psis[2]-psis[1]
+	hs <- sin(psis)
+	rs <- sqrt(1-hs^2)
+	ls <- 2*pi*rs
+	n.thetas <- floor(ls/d.psis)
+	thetas[[1]] <- c(2*pi)
+	for(i in 2:(n.psi-1)){
+		thetas[[i]] <- seq(from=0,to=2*pi,length=n.thetas[i]+1)
+		thetas[[i]] <- thetas[[i]][-(n.thetas[i]+1)]
+	}
+	thetas[[n.psi]] <- c(2*pi)
+	sapply(thetas,length)
+
+	bridge <- list()
+	for(i in 1:(n.psi-1)){
+		a <- c(thetas[[i]],2*pi)
+		b <- c(thetas[[i+1]],2*pi)
+		bridge[[i]] <- matrix(c(1,1),1,2)
+		loop <- TRUE
+		while(loop){
+			n.r <- nrow(bridge[[i]])
+			id.a <- bridge[[i]][n.r,1] + 1
+			id.b <- bridge[[i]][n.r,2] + 1
+			if(id.a > length(thetas[[i]]) & id.b > length(thetas[[i+1]])){
+				if(id.a-1!=1 & id.b-1!=1){
+					bridge[[i]] <- rbind(bridge[[i]],c(1,id.b-1))
+				}
+				
+				loop <- FALSE
+			}else{
+				if(id.a > length(thetas[[i]])){
+					tmp <- c(id.a-1,id.b)
+				}else if(id.b > length(thetas[[i+1]])){
+					tmp <- c(id.a,id.b-1)
+				}else{
+					if(a[id.a] < b[id.b]){
+						tmp <- c(id.a,id.b-1)
+					}else{
+						tmp <- c(id.a-1,id.b)
+					}
+				}
+				bridge[[i]] <- rbind(bridge[[i]],tmp)
+			}
+		}
+	}
+	xyz <- matrix(0,0,3)
+	edge <- matrix(0,0,2)
+	triangles <- matrix(0,0,3)
+  n.triangles <- rep(0,n.psi-1)
+	for(i in 1:n.psi){
+		n.r <- nrow(xyz)
+		if(i > 1){
+			pre <- (n.r-length(thetas[[i-1]])+1):n.r
+			post <- (n.r+1):(n.r+length(thetas[[i]]))
+			edge <- rbind(edge,cbind(post,c(post[-1],post[1])))
+			br <- bridge[[i-1]]
+			new.edge <- cbind(pre[br[,1]],post[br[,2]])
+			edge <- rbind(edge,new.edge)
+			tmp.tri <- cbind(new.edge,rbind(new.edge[-1,],new.edge[1,]))
+			tmp <- apply(tmp.tri,1,unique)
+			triangles <- rbind(triangles,t(tmp))
+      n.triangles[i-1] <- length(tmp[1,])
+		}
+		psi <- psis[i]
+		theta <- thetas[[i]]
+		xyz <- rbind(xyz,cbind(cos(psi) * cos(theta),cos(psi)*sin(theta),sin(psi)))
+		
+	}
+	return(list(xyz=xyz,edge=edge,triangles=triangles,n.psi=n.psi,thetas=thetas,n.triangles=n.triangles))
+}
+
+```
+
+```{r setup}
+knit_hooks$set(rgl = hook_rgl)
+```
+```{}
+n.psi <- 25
+sp.mesh <- my.sphere.tri.mesh(n.psi)
+```
+
+```{}
+spxyz <- sp.mesh$xyz
+apply(spxyz^2,1,sum)
+xx <- 0.8
+yy <- 0.1
+large.xy1 <- which(spxyz[,1]>xx & spxyz[,2]<=yy)
+large.xy2 <- which(spxyz[,1]>xx & spxyz[,2]>yy)
+
+spxyz[large.xy1,1] <- xx + ((spxyz[large.xy1,1]-xx)*10)^2
+spxyz[large.xy2,1] <- xx + ((spxyz[large.xy2,1]-xx)*10)^2
+spxyz[large.xy2,2] <- yy + ((spxyz[large.xy2,1]-yy)*10)^5
+plot3d(spxyz)
+segments3d(spxyz[c(t(sp.mesh$edge)),])
+mesh.tri <- tmesh3d(t(spxyz),t(sp.mesh$triangles),homogeneous=FALSE)
+# 三角形を灰色で塗る
+shade3d(mesh.tri,col="gray")
+```
+
+
+
+```{,rgl=TRUE}
+# 打点して
+plot3d(sp.mesh$xyz)
+# エッジを結ぶ
+segments3d(sp.mesh$xyz[c(t(sp.mesh$edge)),])
+```
+
+三角形を配置する
+```{,rgl=TRUE}
+# 打点して
+plot3d(sp.mesh$xyz)
+# 三角形メッシュオブジェクトを作り
+mesh.tri <- tmesh3d(t(sp.mesh$xyz),t(sp.mesh$triangles),homogeneous=FALSE)
+# 三角形を灰色で塗る
+shade3d(mesh.tri,col="gray")
+```
+
+
+
+```{}
+vertices.mat <- t(sp.mesh$xyz) # ３行の行列にする
+# 座標を純虚四元数化
+vertices <- vertices.mat[1,]*Hi + vertices.mat[2,]*Hj + vertices.mat[3,]*Hk
+edges <- sp.mesh$edge
+faces.v <- t(sp.mesh$triangles)
+n.v <- length(vertices) # 頂点数
+n.f <- length(faces.v[1,]) # 三角形数
+```
+
+
+```{}
+rho.v <- rep(0,n.v) # 頂点における
+rho.f <- rep(0,n.f) # 三角形における
+# 関数 rho.fromVtoTri()は後掲
+#rho.f <- rho.fromVtoTri(rho.v,faces.v)
+```
+
+
+```{}
+E <- list(rep(sparseVector(c(0),i=c(1),length=n.v^2),4))
+E.re <- matrix(0,n.v*4,n.v*4)
+# 関数 my.make.E.v()は後掲
+# E <- my.make.E.v(vertices,faces.v,rho.f)
+# 関数 my.qMtorM()は後掲
+# E.re <- my.qMtorM(E)
+```
+
+
+```{}
+lambda.v <- rep(0,n.v*4) # 四元数ベクトルを長さが４倍の実ベクトルとして表したもの
+# lambda.v <- rep(0*Hi,n.v) # 四元数ベクトル
+# lambda.v <- my.inv.pow.2(E.re)[[1]]
+```
+
+
+```{}
+L <- matrix(0,n.v,n.v)
+L.re <- matrix(0*Hi,n.v*4,n.v*4)
+# 関数 my.make.L(),my.make.quatL()は後掲
+# L <- my.make.L(vertices,faces.v)
+# L.q <- my.make.quatList(L)
+# L.re <- my.qMtorM(L.q)
+omega <- rep(0*Hi,n.v)
+# 関数 my.make.omega()は後掲
+# omega <- my.make.omega(vertices,faces.v,lambda.v)
+new.vertices <- rep(0*Hi,n.v)
+# new.vertices <- as.quaternion(matrix(solve(L.re,omega),nrow=4))
+```
+
+
+
+```{}
+lab <- c("v","f","rho","L","E","lmd","omg","n.v")
+edge.list <- matrix(c("v","L","f","L","v","E","f","E","rho","E","E","lmb","v","omg","f","omg","lmb","omg","L","n.v","omg","n.v"),byrow=TRUE,ncol=2)
+g.rel <- graph.edgelist(edge.list)
+plot(g.rel)                 
+```
+
+
+```{r}
+# 頂点のrho値から面のrho値を算出する
+rho.fromVtoTri <- function(rho.v,faces.v){
+  tmp.rho <- matrix(rho.v[faces.v],nrow=3)
+  apply(tmp.rho,2,mean)
+}
+# Utility 関数
+# 特に疎行列において、面単位で不定回数の値加算をするためのユーティリティ関数
+my.vector.access <- function(v,a,func=sum,zero=0){
+  if(is.vector(v)){
+		v <- matrix(v,ncol=1)
+	}
+	ord <- order(a)
+	rle.out <- rle(a[ord])
+	num.row <- length(rle.out[[1]])
+	num.col <- max(rle.out[[1]])
+	tmp1 <- rep(1:num.row,rle.out[[1]])
+	tmp2 <- c()
+	for(i in 1:num.row){
+		tmp2 <- c(tmp2,1:rle.out[[1]][i])
+	}
+	addr <- tmp1 + num.row*(tmp2-1)
+	ret.v <- matrix(0,num.row,ncol(v))
+	for(i in 1:ncol(v)){
+		if(zero==0){
+			tmp.V <- sparseVector(v[ord,i],i=addr,length=num.row*num.col)
+			M <- Matrix(tmp.V,num.row,num.col)
+		}else{
+			M <- matrix(zero,num.row,num.col)
+			M[addr] <- v[ord,i]
+
+		}
+		ret.v[,i] <- apply(M,1,func)
+
+	}
+	return(list(A = rle.out[[2]],V = ret.v))
+}
+# E行列作成関数
+# ただし、四元数行列なので、虚実４成分それぞれをリストの要素とし
+# 個々のリストも行列ではなく、ベクトル化した形で返す
+# 疎行列のリスト
+# 三角形の面積を考慮して、面のrho値に応じて、rhoが作る曲面上の
+# ベクトル場を作り
+# その定常解の一つとして固有ベクトルを取る
+my.make.E.v <- function(vertices,faces.v,rho){
+  # 三角形の面積
+	edge1 <- vertices[faces.v[2,]]-vertices[faces.v[1,]]
+	edge2 <- vertices[faces.v[3,]]-vertices[faces.v[1,]]
+	tmp <- edge1 * edge2
+  A <- Mod(Im(tmp))/2
+	#A <- abs(i(tmp)+j(tmp)+k(tmp))/2
+	# 三角形ごとの計算用係数
+	coef.a <- -1/(4*A)
+	coef.b <- rho/6
+	coef.c <- A*rho^2/9
+	
+	# Rでは四元数を要素とする行列がないので、re,i,j,kごとに正方行列を作ることにする
+	E.re <- E.i <- E.j <- E.k <- sparseVector(c(0),i=c(1),length=length(vertices)^2)
+  
+	e.q <- list()
+	e.q[[1]] <- vertices[faces.v[2,]]-vertices[faces.v[3,]]
+	e.q[[2]] <- vertices[faces.v[3,]]-vertices[faces.v[1,]]
+	e.q[[3]] <- vertices[faces.v[1,]]-vertices[faces.v[2,]]
+  # すべての頂点ペアについて、すべての三角形ごとに処理をする
+	for(i in 1:3){
+		for(j in 1:3){
+			tmp <- coef.a * e.q[[i]] * e.q[[j]]+ coef.b * (e.q[[j]] -e.q[[i]] ) + coef.c
+			addr <- faces.v[i,] + (length(vertices)*(faces.v[j,]-1))
+			
+			tmp.v <- t(as.matrix(tmp))
+			tmp.out <- my.vector.access(tmp.v,addr)
+			E.re <- E.re + sparseVector(tmp.out[[2]][,1],tmp.out[[1]],length(vertices)^2)
+			E.i <- E.i + sparseVector(tmp.out[[2]][,2],tmp.out[[1]],length(vertices)^2)
+			E.j <- E.j + sparseVector(tmp.out[[2]][,3],tmp.out[[1]],length(vertices)^2)
+			E.k <- E.k + sparseVector(tmp.out[[2]][,4],tmp.out[[1]],length(vertices)^2)
+		}
+	}
+
+	return(list(E.re=E.re,E.i=E.i,E.j=E.j,E.k=E.k))
+}
+# 四元数行列を表すベクトルリストを引数として
+# その実数版行列を返す
+my.qMtorM <- function(Es){
+  n <- sqrt(length(Es[[1]]))
+	N <- (n*4)^2
+	init.id <- c(1:4,(1:4)+n*4,(1:4)+n*4*2,(1:4)+n*4*3)
+	spacing.id <- c(outer((0:(n-1)*4),n*4*4*(0:(n-1)),"+"))
+	ret <- sparseVector(c(0),i=c(1),N)
+	a <- c(1,2,3,4,2,1,4,3,3,4,1,2,4,3,2,1)
+	b <- c(1,1,1,1,-1,1,1,-1,-1,-1,1,1,-1,1,-1,1)
+	for(j in 1:length(a)){
+		tmp.v <- sparseVector(b[j] * Es[[a[j]]]@x,i=init.id[j]+spacing.id[Es[[a[j]]]@i],length=N)
+		ret <- ret + tmp.v
+	}
+	Matrix(ret,n*4,n*4)
+}
+# Ax = lambda b の固有ベクトルを逆冪乗法で近似する
+# 初期ベクトル bは(1,1,...)がよいことが知られているので
+# それをデフォルト値としてある
+my.inv.pow.2 <- function(A,n.iter=3,b=rep(1,ncol(A)),log=FALSE){
+  x <- b
+	if(log){
+		x.log <- matrix(0,n.iter+1,ncol(A))
+		x.log[1,] <- x
+	}
+	#x <- x/sqrt(sum(x^2))
+	#A. <- solve(A)
+	for(i in 1:n.iter){
+		x2 <- solve(A,x)
+		x <- x2/sqrt(sum(x2^2))
+		if(log){
+			x.log[i+1,] <- x
+		}
+		
+	}
+	if(log){
+		return(list(x=x,x.log=x.log))
+	}else{
+		return(list(x=x,x.log=matrix(0,0,ncol(A))))
+	}
+}
+# ラプラシアン行列の算出
+# すべての点について、その点を含む三角形について、三角形の内角で定まる値を加算する
+my.make.L <- function(vertices,faces.v){
+  n.v <- length(vertices)
+	L <- sparseVector(c(0),i=c(1),length=n.v^2)
+	for(i in 1:3){
+		v.ord <- ((1:3)+i+1) %% 3 + 1
+		k1 <- faces.v[v.ord[1],]
+		k2 <- faces.v[v.ord[2],]
+		k3 <- faces.v[v.ord[3],]
+		# 頂点四元数
+		v1 <- vertices[k1]
+		v2 <- vertices[k2]
+		v3 <- vertices[k3]
+		
+		# edge 四元数
+		u1 <- v2-v1
+		u2 <- v3-v1
+		# edge 四元数(純虚四元数)の積は実部がドット積、虚部がクロス積ベクトル
+		u12 <- u1 * u2
+		cotAlpha <- (-Re(u12))/Mod(Im(u12))
+		# このcotAlphaを行列Lの[k2,k2],[k3,k3],[k2,k3],[k3,k2]に加算する
+		# 疎ベクトルで格納する
+		addrk2k2 <- k2 + (k2-1)*n.v
+		addrk3k3 <- k3 + (k3-1)*n.v
+		addrk2k3 <- k2 + (k3-1)*n.v
+		addrk3k2 <- k3 + (k2-1)*n.v
+		
+		addr <- c(addrk2k2,addrk3k3,addrk2k3,addrk3k2)
+		
+		val <- c(cotAlpha,cotAlpha,-cotAlpha,-cotAlpha)/2
+		
+		tmp.out <- my.vector.access(val,addr)
+		L <- L + sparseVector(tmp.out[[2]][,1],tmp.out[[1]],n.v^2)
+	}
+	L
+}
+# ラプラシアン行列Lは実行列だが、その四元数版の実行列化したもの(行・列がそれぞれ４倍)を作る
+my.make.quatList <- function(L){
+  L.q <- list()
+  L.q[[1]] <- L
+  for(i in 2:4){
+    L.q[[i]] <- L*0
+  }
+  L.q
+}
+# omegaは回転を定めるlambdaを介して算出する
+my.make.omega <- function(vertices,faces.v,lambda){
+  n.v <- length(vertices)
+	omega <- rep(0*Hi,n.v)
+	for(i in 1:3){
+		v.ord <- ((1:3)+i+1) %% 3 + 1
+		k1 <- faces.v[v.ord[1],]
+		# 対向辺の向きは頂点IDの大小順にそろえる
+		k23 <- rbind(faces.v[v.ord[2],],faces.v[v.ord[3],])
+		k23 <- apply(k23,2,sort)
+		k2 <- k23[2,]
+		k3 <- k23[1,]
+		# 頂点四元数
+		v1 <- vertices[k1]
+		v2 <- vertices[k2]
+		v3 <- vertices[k3]
+		
+		edge <- v3-v2
+		
+		# lambdaの四元数化、とその共役四元数化
+		lambda.mat <- matrix(lambda,nrow=4)
+		lambda.q <- as.quaternion(lambda.mat)
+		lambda.mat.2 <- lambda.mat
+		lambda.mat.2[2:4,] <- -lambda.mat.2[2:4,]
+		lambda.q. <- as.quaternion(lambda.mat.2)
+		lambda1 <- lambda.q[k2]
+		lambda1. <- lambda.q.[k2]
+		lambda2 <- lambda.q[k3]
+		lambda2. <- lambda.q.[k3]
+		# エッジに回転処理をしながら、加算量を算出
+		val <- 1/3 * lambda1. * edge * lambda1 + 1/6 * lambda1. * edge * lambda2 + 1/6 * lambda2. * edge * lambda1 + 1/3 * lambda2. * edge * lambda2
+
+		# edge 四元数
+		u1 <- v2-v1
+		u2 <- v3-v1
+		# edge 四元数(純虚四元数)の積は実部がドット積、虚部がクロス積ベクトル
+		u12 <- u1 * u2
+		cotAlpha <- (-Re(u12))/Mod(Im(u12))
+
+		Val <- cotAlpha * val /2
+		Val.m <- t(as.matrix(Val))
+		tmp.out2 <- my.vector.access(-Val.m,k2)
+		tmp.out3 <- my.vector.access(Val.m,k3)
+		omega[tmp.out2[[1]]] <- omega[tmp.out2[[1]]] + as.quaternion(t(tmp.out2[[2]]))
+		omega[tmp.out3[[1]]] <- omega[tmp.out3[[1]]] + as.quaternion(t(tmp.out3[[2]]))
+	}
+	omega.re <- as.matrix(omega)
+	omega.re <- omega.re-apply(omega.re,1,mean)
+	c(omega.re)
+}
+# 局所平均曲率を計算する関数
+# 入力は頂点の四元数座標ベクトルと３行で表された三角形頂点ID行列
+# 返り値はnorm.v,norm.face=ret.face,dirの３つで
+# norm.vは各頂点の法線ベクトルに相当する四元数の行列で、その虚部の絶対値が平均曲率の大きさ
+# norm.faceは各三角形のそれで、虚部の絶対値が平均曲率の大きさ
+# dirは各三角形の平均曲率が曲面の外向きか内向きか(今、扱っている曲面はすべて球面様の閉曲面なので、外向き・内向きはその意味での内外)を示すc(-1,0,1)
+my.curvature.cot <- function(vertices,faces.v){
+  n.v <- length(vertices)
+  ret <- rep(0*Hk,n.v)
+  # 三角形の面積
+  edge1 <- vertices[faces.v[2,]]-vertices[faces.v[1,]]
+  edge2 <- vertices[faces.v[3,]]-vertices[faces.v[1,]]
+  tmp <- edge1 * edge2
+  tmp2 <- Mod(Im(tmp))
+  #tmp2 <- i(tmp)+j(tmp)+k(tmp)
+  #inv.f <- which(tmp2<0)
+  #faces.v[2:3,inv.f] <- rbind(faces.v[3,inv.f],faces.v[2,inv.f])
+ 	A.f <- (tmp2)/2
+  # 頂点周囲の三角形面積の和
+  val <- rep(A.f,each=3)
+  addr <- c(faces.v)
+  tmp.out <- my.vector.access(val,addr)
+  A.v <- tmp.out[[2]][,1] # 頂点周囲面積和
+  
+  for(i in 1:3){
+		v.ord <- ((1:3)+i+1) %% 3 + 1
+		k1 <- faces.v[v.ord[1],]
+		k2 <- faces.v[v.ord[2],]
+		k3 <- faces.v[v.ord[3],]
+		# 頂点四元数
+		v1 <- vertices[k1]
+		v2 <- vertices[k2]
+		v3 <- vertices[k3]
+		
+		# edge 四元数
+		u1 <- v2-v1
+		u2 <- v3-v1
+    
+    # 対向辺
+    u3 <- v3-v2
+    #u3.len <- Mod(Im(u3))
+		# edge 四元数(純虚四元数)の積は実部がドット積、虚部がクロス積ベクトル
+		u12 <- u1 * u2
+		cotAlpha <- ((-Re(u12))/Mod(Im(u12)))
+    
+    val <- c(cotAlpha * u3, cotAlpha * (-u3))
+    addr <- c(k2,k3)
+    tmp.out <- my.vector.access(t(as.matrix(val)),addr)
+    tmp.val <- as.quaternion(t(tmp.out[[2]]))
+    ret[tmp.out[[1]]] <- ret[tmp.out[[1]]] + tmp.val
+  }
+  ret.vec <- -ret/(4*A.v)
+  ret.face.re <- rho.fromVtoTri(Re(ret.vec),faces.v)
+  ret.face.i <- rho.fromVtoTri(i(ret.vec),faces.v)
+  ret.face.j <- rho.fromVtoTri(j(ret.vec),faces.v)
+  ret.face.k <- rho.fromVtoTri(k(ret.vec),faces.v)
+  ret.face <- ret.face.re + Hi * ret.face.i + Hj * ret.face.j + Hk * ret.face.k
+  
+  
+  dir <- sign(Re(tmp * ret.face))
+  return(list(norm.v=ret.vec,norm.face=ret.face,dir=dir))
+}
+
+# ３列の実行列(３次元座標の行列)xyzと、３行の頂点ID行列faces.vとを用いて、三角形メッシュを塗り描く関数
+# ただし、この関数は、元がsp.triは、元の三角形メッシュがmy.sphere.tri.mesh()によって作られていることを前提としている。そのような場合に、sp.triという引数によって、隣接緯線間ごとに色を塗り分けることで、元の正球からの変形の様子を色表現することができる
+# また、各三角形の色はrho.fなる実ベクトルによってコントラストをつけることができる
+# col1は、元の正球からの変化を縞模様化するための長さ２の整数ベクトルである。その縞模様を使いたくないとき(メッシュがmy.sphere.tri.mesh()由来ではないときを含む)は、この長さ２のベクトルの２つの値を同じにすればよい)
+plot.sp.conformal <- function(xyz,faces.v,sp.tri,rho.f,col1=c(4,5)){
+  plot3d(xyz,xlab="x",ylab="y",zlab="z")
+  mesh.tri <- tmesh3d(t(xyz),faces.v,homogeneous=FALSE)
+  
+  # 縞のための値ベクトル
+  col. <- rep(col1,length(sp.tri))[1:length(sp.tri)]
+  col <- rep(col.,sp.tri*3)
+  # rhoを反映した値ベクトル
+  rho.f <- rep(rho.f,each=3)
+  #rho.f2 <- sign(rho.f)
+  rho.f <- (rho.f-min(rho.f))/(max(rho.f)-min(rho.f))
+  
+  col2 <- rgb(1-rho.f,1,col/6)
+  #col3 <- gray((rho.f2+1)*0.5)
+  shade3d(mesh.tri,col=col2)  
+}
+```
+
+
+```{r}
+my.conformal.rho <- function(vertices,faces.v,rho.v,face=FALSE){
+  xyz.ori <- t(as.matrix(vertices)[2:4,])
+  n.v <- length(vertices) # 頂点数
+  n.f <- length(faces.v[1,]) # 三角形数
+  if(!face){
+    rho.f <- rho.fromVtoTri(rho.v,faces.v)
+  }else{
+    rho.f <- rho.v
+  }
+  
+  
+  # 三角形の面積
+  edge1 <- vertices[faces.v[2,]]-vertices[faces.v[1,]]
+	edge2 <- vertices[faces.v[3,]]-vertices[faces.v[1,]]
+	tmp <- edge1 * edge2
+  A <- Mod(Im(tmp))/2
+  
+  # rho の面積重みつき総和は0でないと「閉じ」ない
+  s <- sum(A*rho.f)
+  rho.f <- rho.f -s*A/sum(A)
+  
+  
+  E <- my.make.E.v(vertices,faces.v,rho.f)
+  E.re <- my.qMtorM(E)
+  
+  lambda.v <- my.inv.pow.2(E.re)[[1]]
+  
+  L <- my.make.L(vertices,faces.v)
+  L.q <- my.make.quatList(L)
+  L.re <- my.qMtorM(L.q)
+  
+  omega <- my.make.omega(vertices,faces.v,lambda.v)
+  
+  new.vertices <- as.quaternion(matrix(solve(L.re,omega),nrow=4))
+  xyz.new <- t(as.matrix(new.vertices)[2:4,])
+  mean.new <- apply(xyz.new,2,mean)
+  xyz.new. <- t(t(xyz.new)-mean.new)
+  max.new. <- max(abs(xyz.new.))
+  xyz.new.st <- xyz.new./max.new.
+  
+  new.q <- as.quaternion(t(cbind(rep(0,n.v),xyz.new.st)))
+  #ret <- xyz.new.st[,1]*Hi + xyz.new.st[,2]*Hj + xyz.new.st[,3]*Hk
+  
+  ret <- list(xyz.new=xyz.new.st,xyz.ori=sp.mesh$xyz,xyz.new.q=new.q,xyz.ori.q=vertices,faces.v=faces.v,E=E,L=L,lambda.v=lambda.v,omega=omega,n.psi=n.psi,rho.fx=rho.fx,rho.v=rho.v,rho.f=rho.f,sp.mesh=sp.mesh)
+  ret
+}
+```
+
+
+```{r}
+my.sphereConformal <- function(n.psi,rho.fx){
+  sp.mesh <- my.sphere.tri.mesh(n.psi)
+  vertices.mat <- t(sp.mesh$xyz) # ３行行列化
+  vertices <- vertices.mat[1,]*Hi + vertices.mat[2,]*Hj + vertices.mat[3,]*Hk
+  edges <- sp.mesh$edge
+  faces.v <- t(sp.mesh$triangles)
+  rho.v <- rho.fx(sp.mesh$xyz) # 頂点における
+  out <- my.conformal.rho(vertices,faces.v,rho.v)
+  ret <- list(xyz.new=out$xyz.new,xyz.ori=sp.mesh$xyz,xyz.new.q=out$xyz.new.q,xyz.ori.q=vertices,faces.v=faces.v,E=out$E,L=out$L,lambda.v=out$lambda.v,omega=out$omega,n.psi=n.psi,rho.fx=rho.fx,rho.v=rho.v,rho.f=out$rho.f,sp.mesh=sp.mesh)
+  ret
+}
+```
+
+
+```{}
+n.psi <- 30 # 球面メッシュの緯度刻み数
+rho.fx <- function(X){
+  ret <- sin(X[,3]*pi*2 )*3
+  return(ret)
+}
+out1 <- my.sphereConformal(n.psi,rho.fx)
+```
+
+
+```{,rgl=TRUE}
+plot.sp.conformal(out1$xyz.ori,out1$faces.v,out1$sp.mesh$n.triangles,out1$rho.f)
+```
+
+
+
+
+```{,rgl=TRUE}
+plot.sp.conformal(out1$xyz.new,out1$faces.v,out1$sp.mesh$n.triangles,out1$rho.f)
+```
+
+
+
+```{,rgl=TRUE}
+# 平均曲率の計算
+rho.cot1 <- my.curvature.cot(out1$xyz.new.q,out1$faces.v)
+# 三角形の平均曲率を符号付きで出しなおす
+rho.face1 <- rho.cot1[[3]] * Mod(Im(rho.cot1[[2]]))
+plot.sp.conformal(out1$xyz.new,out1$faces.v,out1$sp.mesh$n.triangles,rho.face1)
+```
+
+
+
+```{}
+plot(out1$rho.f,rho.face1,xlab="rho",ylab="mean curvature")
+abline(h=0,col=2)
+abline(v=0,col=2)
+abline(0,1,col=3)
+```
+
+
+
+```{}
+n.psi <- 30
+rho.fx <- function(X){
+  ret <- (2*(X[,1]-0.3)^2+1)*1 - (3*(X[,2]+0.1)^4+2)*1  - (0.2*(X[,2]+0.1+X[,3])^2+0.5)*1
+  return(ret)
+}
+
+out2 <- my.sphereConformal(n.psi,rho.fx)
+```
+
+
+```{,rgl=TRUE}
+plot.sp.conformal(out2$xyz.ori,out2$faces.v,out2$sp.mesh$n.triangles,out2$rho.f)
+```
+
+
+
+```{,rgl=TRUE}
+plot.sp.conformal(out2$xyz.new,out2$faces.v,out2$sp.mesh$n.triangles,out2$rho.f)
+```
+
+
+
+```{,rgl=TRUE}
+# 平均曲率の計算
+rho.cot2 <- my.curvature.cot(out2$xyz.new.q,out2$faces.v)
+# 三角形の平均曲率を符号付きで出しなおす
+rho.face2 <- rho.cot2[[3]] * Mod(Im(rho.cot2[[2]]))
+plot.sp.conformal(out2$xyz.new,out2$faces.v,out2$sp.mesh$n.triangles,rho.face2)
+```
+
+
+
+```{}
+plot(out2$rho.f,rho.face2,xlab="rho",ylab="mean curvature")
+abline(h=0,col=2)
+abline(v=0,col=2)
+abline(0,1,col=3)
+```
+
+
+```{r}
+my.deform.k.serial <- function(vertices,faces.v,k,n.iter=10){
+  v.list <- rho.cot.list <- list()
+  v.list[[1]] <- vertices
+  rho.cot.list[[1]] <- my.curvature.cot(v.list[[1]],faces.v)
+  for(i in 1:n.iter){
+    
+    tmp.rho.f <- rho.cot.list[[i]][[3]] * Mod(Im(rho.cot.list[[i]][[2]]))
+    tmp.out <- my.conformal.rho(v.list[[i]],faces.v,k*tmp.rho.f,face=TRUE)
+    v.list[[i+1]] <- tmp.out$xyz.new.q
+    rho.cot.list[[i+1]] <- my.curvature.cot(v.list[[i+1]],faces.v)
+  }
+  return(list(v.list=v.list,rho.cot.list=rho.cot.list,k=k))
+}
+```
+```{r}
+my.deform.k.serial.m <- function(vertices,faces.v,k,m=2,n.iter=10){
+  v.list <- rho.cot.list <- list()
+  v.list[[1]] <- vertices
+  rho.cot.list[[1]] <- my.curvature.cot(v.list[[1]],faces.v)
+  for(i in 1:n.iter){
+    
+    #tmp.rho.f <- rho.cot.list[[i]][[3]] * Mod(Im(rho.cot.list[[i]][[2]]))
+    tmp.rho.f <- rho.cot.list[[i]][[3]] * Mod(Im(rho.cot.list[[i]][[2]]))^m
+    #sign.tmp.rho.f <- sign(tmp.rho.f)
+    #tmp.rho.f.m <- sign.tmp.rho.f * abs(tmp.rho.f)^2
+    #tmp.out <- my.conformal.rho(v.list[[i]],faces.v,k*tmp.rho.f,face=TRUE)
+    tmp.out <- my.conformal.rho(v.list[[i]],faces.v,k*tmp.rho.f,face=TRUE)
+    v.list[[i+1]] <- tmp.out$xyz.new.q
+    rho.cot.list[[i+1]] <- my.curvature.cot(v.list[[i+1]],faces.v)
+  }
+  return(list(v.list=v.list,rho.cot.list=rho.cot.list,k=k))
+}
+```
+
+```{r}
+bun.v <- read.table("bunnyV.txt",sep=" ")
+bun.f <-read.table("bunnyF.txt",sep=" ")
+
+bun.v.q <- bun.v[,1] * Hi + bun.v[,2] * Hj + bun.v[,3] * Hk
+
+plot3d(bun.v)
+mesh.tri <- tmesh3d(t(bun.v),t(bun.f),homogeneous=FALSE)
+# 三角形を灰色で塗る
+shade3d(mesh.tri,col="gray")
+
+
+k <- -0.8
+n.iter <- 5
+mm <- 2
+
+out.series1 <- my.deform.k.serial.m(bun.v.q,t(bun.f),k,m=mm,n.iter=n.iter)
+for(i in 1:n.iter){
+	open3d()
+	bun.v.new <- t(as.matrix(out.series1$v.list[[i]])[2:4,])
+
+	plot3d(bun.v.new)
+
+
+	mesh.tri <- tmesh3d(t(bun.v.new),t(bun.f),homogeneous=FALSE)
+	# 三角形を灰色で塗る
+	shade3d(mesh.tri,col="gray")
+}
+
+```
+
