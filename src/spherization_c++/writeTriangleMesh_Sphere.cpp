@@ -93,7 +93,7 @@ void writeTriangleMesh_Sphere( const unsigned int npsi, std::ofstream& out )
                up_pos++;
             }
          }
-         // 台形が境界にある場合
+         // 三角形が境界にある場合
          else if ( up_pos == up_end && down_pos < down_end )
          {
             faces.push_back(
