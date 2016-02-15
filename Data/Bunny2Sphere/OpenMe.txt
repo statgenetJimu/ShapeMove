@@ -1,0 +1,17 @@
+# Open "Bunny2Sphere.RData file, then,
+
+library(rgl)
+
+
+for(i in 1:n.iter){
+	open3d()
+	bun.v.new <- t(as.matrix(out.series1$v.list[[i]])[2:4,])
+
+	plot3d(bun.v.new)
+
+
+	mesh.tri <- tmesh3d(t(bun.v.new),t(bun.f),homogeneous=FALSE)
+	# ŽOŠpŒ`‚ðŠDF‚Å“h‚é
+	shade3d(mesh.tri,col="gray")
+}
+

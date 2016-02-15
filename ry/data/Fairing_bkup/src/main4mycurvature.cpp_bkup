@@ -1,0 +1,56 @@
+#include <iostream>
+using namespace std;
+
+#include "Mesh.h"
+#include "Viewer.h"
+#include "DenseMatrix.h"
+#include "Mesh.h"
+#include "Real.h"
+#include "DenseMatrix.h"
+#include "SparseMatrix.h"
+#include "DiscreteExteriorCalculus.h"
+#include <iostream>
+#include <fstream>
+
+using namespace DDG;
+
+int main( int argc, char** argv )
+{
+   if( argc != 2 )
+   {
+      cerr << "usage: " << argv[0] << " in.obj" << endl;
+      return 1;
+   }
+
+   Mesh mesh;
+   mesh.read( argv[1] );
+         SparseMatrix<Real> star0;
+         HodgeStar0Form<Real>::build( mesh, star0 );
+
+         SparseMatrix<Real> star1;
+         HodgeStar1Form<Real>::build( mesh, star1 );
+         
+         SparseMatrix<Real> d0;
+         ExteriorDerivative0Form<Real>::build( mesh, d0 );
+         
+         SparseMatrix<Real> L = d0.transpose() * star1 * d0;
+         
+         //cout << "[qr] size: " << L.nRows() << " x " << L.nColumns() << "\n";
+         std::ofstream outputfile("outTT.txt");
+         for( int ii = 0; ii < L.nColumns(); ii++ )
+         {
+			outputfile<<L(ii,ii);
+			outputfile<<"\n";
+			//cout << "L value" << L(ii,ii) << "\n";
+		}
+		outputfile.close();
+	
+	
+   //mesh.write( "outTT.obj" );
+   //Viewer viewer;
+   //viewer.mesh.read( argv[1] );
+   //viewer.init();
+   
+   return 0;
+}
+
