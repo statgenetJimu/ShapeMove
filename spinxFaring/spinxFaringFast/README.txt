@@ -1,11 +1,11 @@
-# å…ƒã‚³ãƒ¼ãƒ‰ç¾¤
-ã“ã®ã‚³ãƒ¼ãƒ‰ç¾¤ã¯ http://www.cs.cmu.edu/~kmcrane/Projects/SpinTransformations/ ã®Code C++/Fastã«ã‚ˆã‚‹ã€Spin transformationå‡¦ç†ã«åŸºã¥ãã€ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æ›²ç‡ãŒå‡ä¸€åŒ–ã™ã‚‹ã‚ˆã†ãªå¤‰åŒ–é‡æŒ‡å®šã™ã‚‹ã‚ˆã†ã«æ›¸ãæ›ãˆãŸã‚‚ã®ã§ã™
+# Œ³ƒR[ƒhŒQ
+‚±‚ÌƒR[ƒhŒQ‚Í http://www.cs.cmu.edu/~kmcrane/Projects/SpinTransformations/ ‚ÌCode C++/Fast‚É‚æ‚éASpin transformationˆ—‚ÉŠî‚Ã‚«AƒIƒuƒWƒFƒNƒg‚Ì‹È—¦‚ª‹Ïˆê‰»‚·‚é‚æ‚¤‚È•Ï‰»—Êw’è‚·‚é‚æ‚¤‚É‘‚«Š·‚¦‚½‚à‚Ì‚Å‚·
 
-# ãƒ“ãƒ«ãƒ‰ã®ä»•æ–¹
-* ã“ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã¯VirtualBox + vagrant + utunbu/trusty ã§å‹•ä½œç¢ºèªã—ã¦ã„ã¾ã™
+# ƒrƒ‹ƒh‚Ìd•û
+* ‚±‚ÌƒvƒƒOƒ‰ƒ€‚ÍVirtualBox + vagrant + utunbu/trusty ‚Å“®ìŠm”F‚µ‚Ä‚¢‚Ü‚·
 
-* ä»¥ä¸‹ã®ã‚³ãƒãƒ³ãƒ‰ã§OpenGLã¨Linear Algebraã€ç–è¡Œåˆ—å‡¦ç†ã®ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™
-* SuiteSparseã«ã¤ã„ã¦ã¯ã“ã¡ã‚‰ http://d.hatena.ne.jp/ryamada/20160214 ã«å°‘ã—è§£èª¬ã‚’æ›¸ãã¾ã—ãŸ
+* ˆÈ‰º‚ÌƒRƒ}ƒ“ƒh‚ÅOpenGL‚ÆLinear AlgebraA‘as—ñˆ—‚Ìƒ‰ƒCƒuƒ‰ƒŠ‚ğƒCƒ“ƒXƒg[ƒ‹‚·‚é•K—v‚ª‚ ‚è‚Ü‚·
+* SuiteSparse‚É‚Â‚¢‚Ä‚Í‚±‚¿‚ç http://d.hatena.ne.jp/ryamada/20160214 ‚É­‚µ‰ğà‚ğ‘‚«‚Ü‚µ‚½
 
 * OpenGL
 sudo apt-get install -y mesa-common-dev libglu1-mesa-dev freeglut3-dev
@@ -13,17 +13,17 @@ sudo apt-get install -y mesa-common-dev libglu1-mesa-dev freeglut3-dev
 * Linear Algebra
 sudo apt-get install -y libsuitesparse-dev
 
-* ãã®ã†ãˆã§ã€ã“ã®prep.txtã¨åŒéšå±¤ã«ã‚ã‚‹Makefileã‚’makeã—ã¦ãã ã•ã„
+* ‚»‚Ì‚¤‚¦‚ÅA‚±‚Ìprep.txt‚Æ“¯ŠK‘w‚É‚ ‚éMakefile‚ğmake‚µ‚Ä‚­‚¾‚³‚¢
 make
 
-# ä½¿ã„æ–¹
-* Makefileã¨åŒéšå±¤ã«ã§ãã‚‹ spinxFairingFast ã¨ã„ã†å®Ÿè¡Œå¯èƒ½ãƒ•ã‚¡ã‚¤ãƒ«ã«ï¼”ã¤ã®å¼•æ•°ã‚’æ¸¡ã—ã¾ã™
- (1) ä¸‰è§’å½¢ãƒ¡ãƒƒã‚·ãƒ¥ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ« hoge.obj
- (2) è² ã®å®Ÿæ•° ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯-0.95 (-1, 0) ã®å€¤ã€‚ï¼‘å›ã®å‡¦ç†ã§ã®æ›²ç‡ã®å¹³å¦åŒ–ã®ç¨‹åº¦ã‚’æŒ‡å®šã™ã‚‹
- (3) è‡ªç„¶æ•°ã€‚å¹³å¦åŒ–å‡¦ç†ã®å›æ•°
- (4) å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã®æ ¹ã¨ãªã‚‹æ–‡å­—åˆ— hoge ã¨å…¥ã‚Œã‚Œã°ã€hoge0.obj, hoge1.obj,...ã¨å‡ºã‚‹
+# g‚¢•û
+* Makefile‚Æ“¯ŠK‘w‚É‚Å‚«‚é spinxFairingFast ‚Æ‚¢‚¤Às‰Â”\ƒtƒ@ƒCƒ‹‚É‚S‚Â‚Ìˆø”‚ğ“n‚µ‚Ü‚·
+ (1) OŠpŒ`ƒƒbƒVƒ…‚ÌƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹ hoge.obj
+ (2) •‰‚ÌÀ” ƒfƒtƒHƒ‹ƒg‚Í-0.95 (-1, 0) ‚Ì’lB‚P‰ñ‚Ìˆ—‚Å‚Ì‹È—¦‚Ì•½’R‰»‚Ì’ö“x‚ğw’è‚·‚é
+ (3) ©‘R”B•½’R‰»ˆ—‚Ì‰ñ”
+ (4) o—Íƒtƒ@ƒCƒ‹‚Ìª‚Æ‚È‚é•¶š—ñ hoge ‚Æ“ü‚ê‚ê‚ÎAhoge0.obj, hoge1.obj,...‚Æo‚é
  
-* å®Ÿè¡Œã‚³ãƒãƒ³ãƒ‰ä¾‹
+* ÀsƒRƒ}ƒ“ƒh—á
  ./spinxFaringFast ./example/infile/bunny.obj -0.9 10 out
 
-# ä½œæˆobjãƒ•ã‚¡ã‚¤ãƒ«ã®æå‡ºã¯ã€viewerãƒ•ã‚©ãƒ«ãƒ€ã®ãã‚Œã‚’å‚ç…§
+# ì¬objƒtƒ@ƒCƒ‹‚Ì•`o‚ÍAviewerƒtƒHƒ‹ƒ_‚Ì‚»‚ê‚ğQÆ
