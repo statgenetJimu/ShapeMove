@@ -1,0 +1,69 @@
+/*
+ * Implicit Fairing of Arbitrary Meshes using Diffusion and Curvature Flow
+ * Mathieu Desbrun, Mark Meyer, Peter Schröder, Alan H. Barr
+ * ACM Siggraph '99 Proceedings
+ */
+
+#ifndef DDG_APPLICATION_H
+#define DDG_APPLICATION_H
+
+#include "DenseMatrix.h"
+#include "SparseMatrix.h"
+#include "DiscreteExteriorCalculus.h"
+
+namespace DDG
+{
+   class Application
+   {
+   public:
+      void run(const double step, Mesh& mesh, spiny::Mesh& meshY)
+      {
+         meshY.setCurvatureChange4(step);
+         meshY.updateDeformation();
+         meshY.updateDeformation2();
+         DenseMatrix<Real> x;
+         getPositions(mesh, x);
+         for(unsigned int i = 0; i < meshY.vertices.size(); i++ )
+         {
+            x(i,0) = meshY.newVertices[i].im().x;
+            x(i,1) = meshY.newVertices[i].im().y;
+            x(i,2) = meshY.newVertices[i].im().z;
+         }
+         setPositions(x, mesh);
+      }
+      void process(const double step, spiny::Mesh& meshY)
+      {
+         meshY.setCurvatureChange4(step);
+         meshY.updateDeformation();
+         meshY.updateDeformation2();
+         
+      }
+
+   protected:
+      void getPositions(const Mesh& mesh, DenseMatrix<Real>& x) const
+      {
+         x = DenseMatrix<Real>( mesh.vertices.size(), 3 );
+         for ( VertexCIter v = mesh.vertices.begin();
+              v != mesh.vertices.end();
+              v ++)
+         {
+            for( int i = 0; i < 3; ++i)
+               x(v->index, i) = v->position[i];
+         }
+      }
+      
+      void setPositions(const DenseMatrix<Real>& x, Mesh& mesh)
+      {
+         for ( VertexIter v = mesh.vertices.begin();
+              v != mesh.vertices.end();
+              v ++)
+         {
+            v->position = Vector(x(v->index, 0),
+                                 x(v->index, 1),
+                                 x(v->index, 2));
+         }
+      }
+   };
+}
+
+#endif
