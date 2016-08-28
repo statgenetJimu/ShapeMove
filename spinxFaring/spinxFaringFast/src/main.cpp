@@ -24,20 +24,20 @@ int main( int argc, char **argv )
    //usage
    if (argc != 5)
    {
-      cout << argv[1] : objƒtƒ@ƒCƒ‹–¼B‹…–Ê“¯‘ŠƒIƒuƒWƒFƒNƒg‚Ìobjƒtƒ@ƒCƒ‹
-           << argv[2] : Fairingˆ—‚Ì‚PƒXƒeƒbƒv‚Å‚Ì•A0.9‚Æ‚¢‚¤‚Ì‚ÍA‹È—¦‚ð10%•Ï‰»‚³‚¹‚Ä•½’R‰»‚·‚éA‚ÆŒ¾‚¤ˆÓ–¡
-           << argv[3] : ƒXƒeƒbƒv”
-           << argv[4] : o—Íƒtƒ@ƒCƒ‹–¼‚Ìª hoge‚ÆŽw’è‚·‚é‚Æ hoge0.obj,hoge1.obj,..‚Æ‚¢‚¤–¼‘O‚Ìƒtƒ@ƒCƒ‹‚ª‚Å‚«‚é
-           << ./fairing hogei.obj‚Æ‚·‚ê‚Î‚Ý‚ç‚ê‚é
+      cout << "argv[1] : objãƒ•ã‚¡ã‚¤ãƒ«åã€‚çƒé¢åŒç›¸ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®objãƒ•ã‚¡ã‚¤ãƒ«\n"
+              "argv[2] : Fairingå‡¦ç†ã®ï¼‘ã‚¹ãƒ†ãƒƒãƒ—ã§ã®å¹…ã€0.9ã¨ã„ã†ã®ã¯ã€æ›²çŽ‡ã‚’10%å¤‰åŒ–ã•ã›ã¦å¹³å¦åŒ–ã™ã‚‹ã€ã¨è¨€ã†æ„å‘³\n"
+              "argv[3] : ã‚¹ãƒ†ãƒƒãƒ—æ•°\n"
+              "argv[4] : å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«åã®æ ¹ hogeã¨æŒ‡å®šã™ã‚‹ã¨ hoge0.obj,hoge1.obj,..ã¨ã„ã†åå‰ã®ãƒ•ã‚¡ã‚¤ãƒ«ãŒã§ãã‚‹\n"
+              "./fairing hogei.objã¨ã™ã‚Œã°ã¿ã‚‰ã‚Œã‚‹"
            << endl;
       return 0;
    }
 
-   int n = atoi( argv[3] ); //‘æ3ˆø”‚ð®”Œ^‚É•ÏŠ·‚µ‚Än‚É‘ã“ü
-   double step = atof( argv[2] ); //‘æ2ˆø”‚ð­”Œ^‚É•ÏŠ·‚µ‚Äx‚É‘ã“ü
+   int n = atoi( argv[3] ); //ç¬¬3å¼•æ•°ã‚’æ•´æ•°åž‹ã«å¤‰æ›ã—ã¦nã«ä»£å…¥
+   double step = atof( argv[2] ); //ç¬¬2å¼•æ•°ã‚’å°‘æ•°åž‹ã«å¤‰æ›ã—ã¦xã«ä»£å…¥
    // load mesh
    spiny::Mesh meshY;
-   meshY.read( argv[1] ); //‘æ1ˆø”‚Íobjƒtƒ@ƒCƒ‹–¼
+   meshY.read( argv[1] ); //ç¬¬1å¼•æ•°ã¯objãƒ•ã‚¡ã‚¤ãƒ«å
    
    // processing with Application.h
    
