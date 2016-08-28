@@ -1,0 +1,7 @@
+Compile ShapeMove/src/単純な球面化/writeTriangleMesh_Sphere.cpp as a.out.
+Then, choose your favorite number (see source code for detail)
+$ ./a.out 10
+$ ls sphere.obj
+
+As you need not to deform sphere, deform for 0 time. steps and filename can be anything.
+$ ./spinxFairingFast sphere.obj 0.5 0 hoge

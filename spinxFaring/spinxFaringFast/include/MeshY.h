@@ -77,6 +77,8 @@ class Mesh
       
       vector<double> returnRho( void);
 
+      vector<double> SH_innerProduct(int n_coef, const vector<double> &data) const;
+
    protected:
 
       vector<Quaternion> lambda;

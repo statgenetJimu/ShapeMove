@@ -30,8 +30,11 @@ DDG_OPENGL_LIBS       = -lglut -lGL -lGLU
 TARGET = spinxFairingFast
 CC = g++
 LD = g++
-CFLAGS = -O3 -Wall -Werror -ansi -pedantic  $(DDG_INCLUDE_PATH) -I./include -I./src -DGL_GLEXT_PROTOTYPES
-LFLAGS = -O3 -Wall -Werror -ansi -pedantic $(DDG_LIBRARY_PATH)
+#CFLAGS = -O3 -Wall -Werror -ansi -pedantic  $(DDG_INCLUDE_PATH) -I./include -I./src -DGL_GLEXT_PROTOTYPES
+#LFLAGS = -O3 -Wall -Werror -ansi -pedantic $(DDG_LIBRARY_PATH)
+CFLAGS = -O3 -Wall -Werror -std=c++1y -pedantic  $(DDG_INCLUDE_PATH) -I./include -I./src -DGL_GLEXT_PROTOTYPES -I/usr/include/boost
+LFLAGS = -O3 -Wall -Werror -std=c++1y -pedantic $(DDG_LIBRARY_PATH)
+
 LIBS = $(DDG_OPENGL_LIBS) $(DDG_SUITESPARSE_LIBS) $(DDG_BLAS_LIBS)
 
 ########################################################################################

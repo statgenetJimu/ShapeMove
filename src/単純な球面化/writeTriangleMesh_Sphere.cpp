@@ -1,3 +1,7 @@
+// This code is originally from http://d.hatena.ne.jp/ryamada/20150406/1428009914
+// implemented by ryamada
+
+
 #include <iostream>
 #include <fstream>
 #include <vector>
