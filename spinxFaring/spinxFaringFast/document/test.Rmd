@@ -1,0 +1,19 @@
+---
+title: "SH_innerProduct"
+author: "Takuya Okada"
+date: "2016年8月29日"
+output: word_document
+---
+
+## 概要
+実験で得られたデータからメッシュを取り出すと、各頂点にR、G、B、平均曲率、ガウス曲率などのスカラーが対応付けられる。このメッシュに対してspintransformation、willmore flowで球化を行うが、変形後でも各頂点は変形前のものと対応付けを維持される。そのため、球への変換前にメッシュ上に観測されたスカラー値は、変換後は球面上のスカラー場として観測される。球面調和関数は一般にポテンシャルのようなスカラー場を記述するのに用いられていて、球面上の正規直交系になっている。SH_innerProjectは球面調和関数展開を、離散構造であるメッシュで与えられた時に数値計算的に行う関数である。
+
+## 内積の離散化
+スカラー場$f(\theta, \phi)$と球面調和関数$Y_{m}^{l}(\theta, \phi)$との内積は$\int\int f(\theta, \phi) Y_{m}^{l}(\theta, \phi) \sin\theta d\theta d\phi$で表される。微小面積要素$dS$を計算すると、$dS = \left| \frac{\partial \vec{p}}{\partial x}dx \times \frac{\partial \vec{p}}{\partial y}dy \right|$であり、さらに計算すると$\sqrt{\left(\frac{\partial f}{\partial x}\right)^{2} + \left(\frac{\partial f}{\partial y}\right)^{2} + 1}dxdy = \frac{1}{z}dxdy$が得られる。一方$(x,y,z) = \left(\sin\theta\cos\phi, \sin\theta\sin\phi, \cos\theta\right)$より$dx\wedge dy = \sin\theta d\theta \wedge d\phi$なので、結局$dS = \sin\theta d\theta d\phi$。よって$\int\int f(\theta, \phi) Y_{m}^{l}(\theta, \phi) \sin\theta d\theta d\phi = \sum f(\theta, \phi) Y_{m}^{l}(\theta, \phi) \Delta S$となる。
+
+## 微小面積ΔS
+球面上の三角形の面積は$\alpha + \beta + \gamma - \pi$で表される。各頂点とそれが含まれる三角形を考えると、その頂点に対応付けられる面積は取り囲む面積の$\frac{1}{3}$である。
+
+## 参考
+* <http://takuyaokada.hatenablog.com/entry/20160218/1455758454>: 球面調和関数についての簡易なまとめ
+* <http://takuyaokada.hatenablog.com/entry/20160218/1455804206>: 連続なスカラー場の球面調和関数展開を取り扱った。

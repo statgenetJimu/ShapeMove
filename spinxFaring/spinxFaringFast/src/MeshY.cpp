@@ -6,11 +6,16 @@
 
 #include <fstream>
 #include <sstream>
+#include <array>
 #include <cmath>
+#include <cassert>
+#include <boost/math/special_functions/spherical_harmonic.hpp>
 #include "MeshY.h"
+#include "VectorY.h"
 #include "LinearSolverY.h"
 #include "EigenSolverY.h"
 #include "UtilityY.h"
+
 
 namespace spiny{
 extern cm::Common cc;
@@ -424,4 +429,108 @@ void Mesh :: write( const string& filename )
                   << 1+faces[i].vertex[2] << endl;
    }
 }
+
+// -----------------------------------------------------------------------------
+// Spherical Harmonic Projection
+// added:
+// #include "VectorY.h"
+// #include <boost/math/special_functions/spherical_harmonic.hpp>
+// #include <array>
+// #include <cmath>
+// #include <cassert>
+// see document for mathematical settings
+std::vector<double> Mesh :: SH_innerProduct(int n_coef, const std::vector<double> &data) const
+{
+	using namespace std;
+	const double pi = 3.1415926535897932384626433832795028841971;
+
+	// input validation
+	assert(data.size() == vertices.size());
+
+	// project vertices onto S2 sphere
+	size_t nV = vertices.size();
+	vector<Vector> vertices_on_S2(nV);
+	for (size_t i = 0; i < nV; i++)
+	{
+		Quaternion q = vertices[i];
+		vertices_on_S2[i][0] = q[1] / q.im().norm(); 
+		vertices_on_S2[i][1] = q[2] / q.im().norm();
+		vertices_on_S2[i][2] = q[3] / q.im().norm();
+	}
+
+	// face angle on triangloid, which is a face projected onto S2
+	// arguments: index to Vertices (0 <= i < nV)
+	function< double(int,int,int) > face_angle = [&](int pivot, int ind0, int ind1)
+	{
+		auto P = vertices_on_S2[pivot];
+		auto V0 = vertices_on_S2[ind0];
+		auto V1 = vertices_on_S2[ind1];
+		Vector v0 = V0 - (P*V0) * P;
+		Vector v1 = V1 - (P*V1) * P;
+		return acos(v0*v1 / ( v0.norm() * v1.norm() ));
+	};
+
+	// triangloid area distributed equally to verticies that share the face
+	vector<double> triangloid_area(nV, 0);
+	for (auto f : faces)
+	{
+		int index[5] = {0, 1, 2, 0, 1};
+		double area = -pi;
+		for (int i = 0; i < 3; i++)
+		{
+			area += face_angle(f.vertex[index[i]], f.vertex[index[i+1]], f.vertex[index[i+2]]);
+		}
+		for (int i = 0; i < 3; i++)
+		{
+			triangloid_area[f.vertex[i]] += area / 3;
+		}
+	}
+
+	// SH projection
+	vector<double> coef(n_coef);
+	int l = 1, m = 0;
+	// continue until coef become full
+	while (l*l - l + m + 1 != n_coef)
+	{
+		double sum = 0;
+		for (size_t i = 0; i < nV; i++)
+		{
+			using namespace boost::math;
+			double x = vertices_on_S2[i][0];
+			double y = vertices_on_S2[i][1];
+			double z = vertices_on_S2[i][2];
+			double theta = acos(z);
+			double phi;
+			// classification to numerically correct
+			if (x == 0 && y == 0)
+				phi = 0;
+			else
+			{
+				double rx = x / sqrt(x*x + y*y);
+				double ry = y / sqrt(x*x + y*y);
+				if (abs(rx) < pi/4 && ry > 0)
+					phi = acos(rx);	
+				else if (abs(rx) < pi/4 && ry < 0)
+					phi = acos(rx) + pi;
+				else if (rx > 0)
+					if (y > 0) phi = asin(ry);
+					else phi = 2*pi + asin(ry);
+				else
+					phi = pi - asin(ry);
+			}
+			// integral(l-1 because the library define l as 0-origin)
+			sum += data[i] * spherical_harmonic_r(l-1, m, theta, phi) * triangloid_area[i];
+		}
+		coef[l*l - l + m] = sum;
+		
+		if (m == l - 1)
+		{
+			l += 1;
+			m = -l + 1;
+		}
+		else m += 1;
+	}
+	return coef;
+}
+
 }

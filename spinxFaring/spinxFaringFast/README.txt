@@ -13,6 +13,9 @@ sudo apt-get install -y mesa-common-dev libglu1-mesa-dev freeglut3-dev
 * Linear Algebra
 sudo apt-get install -y libsuitesparse-dev
 
+* Boost
+sudo apt-get install -y libboost-all-dev
+
 * ‚»‚Ì‚¤‚¦‚ÅA‚±‚Ìprep.txt‚Æ“¯ŠK‘w‚É‚ ‚éMakefile‚ğmake‚µ‚Ä‚­‚¾‚³‚¢
 make
 
