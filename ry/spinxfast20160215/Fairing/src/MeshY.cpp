@@ -106,7 +106,7 @@ void Mesh :: setCurvatureChange3( const double scale )
 {
 	//build Laplacian
    int nV = vertices.size();
-   QuaternionMatrix L0; //SparseMatrix‚É‚È‚Á‚Ä‚¢‚é
+   QuaternionMatrix L0; //SparseMatrixã«ãªã£ã¦ã„ã‚‹
    L0.resize( nV, nV );
    // visit each face
    for( size_t i = 0; i < faces.size(); i++ )
@@ -132,7 +132,7 @@ void Mesh :: setCurvatureChange3( const double scale )
          double cotAlpha = (u1*u2)/(u1^u2).norm();
 
          // add contribution of this cotangent to the matrix
-         // ”ñƒ[ƒ‚ÌƒZƒ‹‚¾‚¯’l‚ª“o˜^‚³‚ê‚éd‘g‚İ(‘as—ñ)‚É‚È‚Á‚Ä‚¢‚é‚©‚ç‘å‚«‚­‚È‚è‚·‚¬‚È‚¢
+         // éã‚¼ãƒ­ã®ã‚»ãƒ«ã ã‘å€¤ãŒç™»éŒ²ã•ã‚Œã‚‹ä»•çµ„ã¿(ç–è¡Œåˆ—)ã«ãªã£ã¦ã„ã‚‹ã‹ã‚‰å¤§ãããªã‚Šã™ããªã„
          L0( k1, k2 ) -= cotAlpha / 2.;
          L0( k2, k1 ) -= cotAlpha / 2.;
          L0( k1, k1 ) += cotAlpha / 2.;

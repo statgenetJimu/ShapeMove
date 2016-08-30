@@ -78,7 +78,7 @@ void Mesh :: setCurvatureChange4(const double scale)
 	vector<Quaternion> rhov(nV);
 	vector<Quaternion> rhof(nF);
 	// triangle area area(i) 
-	// ’¸“_üˆÍ–ÊÏ
+	// é ‚ç‚¹å‘¨å›²é¢ç©
 	vector<double> areav(nV);
 	for(int i=0; i < nF; i++){
 		
