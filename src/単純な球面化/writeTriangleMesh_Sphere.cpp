@@ -1,7 +1,3 @@
-// This code is originally from http://d.hatena.ne.jp/ryamada/20150406/1428009914
-// implemented by ryamada
-
-
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -59,6 +55,7 @@ void writeTriangleMesh_Sphere( const unsigned int npsi, std::ofstream& out )
 /*
    面に対応する頂点のtupleを集める
    頂点はファイル上の行数を表すintで表される
+   面には向きがあり、頂点の並び方で決定される
 */
    std::vector< std::tuple<unsigned int, unsigned int, unsigned int> > faces;
 
@@ -107,7 +104,7 @@ void writeTriangleMesh_Sphere( const unsigned int npsi, std::ofstream& out )
          else if ( up_pos < up_end && down_pos == down_end )
          {
             faces.push_back(
-               std::make_tuple(up_pos + up_ori, (up_pos + 1) % up_end + up_ori, down_ori) );
+               std::make_tuple(up_pos + up_ori, down_ori, (up_pos + 1) % up_end + up_ori) );
             up_pos++;
          }
          else
@@ -121,10 +118,10 @@ void writeTriangleMesh_Sphere( const unsigned int npsi, std::ofstream& out )
    // 下の極を頂点に含む場合
    int bottom = std::accumulate( nphis.begin(), nphis.end(), 0);
    int up_end = nphis[ nphis.size() - 2 ];
-   for ( int i = 0; i < up_end; i++)
+   for ( int i = 0; i < up_end; i++ )
    {
       faces.push_back(
-         std::make_tuple(bottom, i + ( bottom - up_end), (i + 1) % up_end + ( bottom - up_end )) );
+         std::make_tuple(i + ( bottom - up_end), bottom, (i + 1) % up_end + ( bottom - up_end )) );
    }
 
 
