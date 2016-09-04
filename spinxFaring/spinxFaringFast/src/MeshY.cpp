@@ -447,7 +447,7 @@ std::vector<double> Mesh :: SH_innerProduct(int n_coef, const std::vector<double
 	// input validation
 	assert(data.size() == vertices.size());
 
-	// project vertices onto S2 sphere
+	// project vertices onto S2 sphere(assume that the center of the sphere is on (0,0,0))
 	size_t nV = vertices.size();
 	vector<Vector> vertices_on_S2(nV);
 	for (size_t i = 0; i < nV; i++)
