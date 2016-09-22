@@ -80,14 +80,14 @@ TEST_CASE("check Mesh::SH_restoreData","[Mesh]")
 		REQUIRE(data == correct_data);
 	}
 
-//	SECTION("vertices: not uniform, value: equal")
-//	{
-//		mesh.read("not_uniform_sphere.obj");
-//		vector<double> coef = {1, 0, 0, 0};
-//		vector<double> data = mesh.SH_restoreData(coef);
-//		vector<double> correct_data(data.size(), 0.28209479177387814);
-//		REQUIRE(data == correct_data);
-//	}
+	SECTION("vertices: not uniform, coef = {1, 0, 0, 0}")
+	{
+		mesh.read("bunny_sphere.obj");
+		vector<double> coef = {1, 0, 0, 0};
+		vector<double> data = mesh.SH_restoreData(coef);
+		vector<double> correct_data(data.size(), 0.28209479177387814);
+		REQUIRE(data == correct_data);
+	}
 }
 
 TEST_CASE("check Mesh::SH_expand", "[Mesh]")
@@ -134,32 +134,32 @@ TEST_CASE("check Mesh::SH_expand", "[Mesh]")
 		}
 	}
 
-//	SECTION("vertices: not uniform, value: equal")
-//	{
-//		mesh.read("not_uniform_sphere.obj");
-//	
-//		vector<double> data(mesh.vertices.size(), 0.28209479177387814); // 1/2/pi^0.5
-//		vector<double> coef = mesh.SH_expand(100, data);
-//	
-//		REQUIRE(coef[0] == Approx(1));
-//		for (size_t i = 1; i < coef.size(); ++i)
-//		{
-//			REQUIRE(coef[i] == Approx(0));
-//		}
-//	}
-//	
-//	SECTION("vertices: not uniform, value: not equal")
-//	{
-//		mesh.read("not_uniform_sphere.obj");
-//	
-//		// use same coefficient as http://takuyaokada.hatenablog.com/entry/20160218/1455758454 (written in python)
-//		vector<double> coef_original = {10, 1, 2, 0, 1, 5, 3, 4, 0};
-//		vector<double> data = mesh.SH_restoreData(coef_original);
-//	
-//		vector<double> coef = mesh.SH_expand(coef_original.size(), data);
-//		for (size_t i = 0; i < coef.size(); ++i)
-//		{
-//			REQUIRE(coef[i] == Approx(coef_original[i]));
-//		}
-//	}
+	SECTION("vertices: not uniform, value: equal")
+	{
+		mesh.read("bunny_sphere.obj");
+	
+		vector<double> data(mesh.vertices.size(), 0.28209479177387814); // 1/2/pi^0.5
+		vector<double> coef = mesh.SH_expand(100, data);
+	
+		REQUIRE(coef[0] == Approx(1));
+		for (size_t i = 1; i < coef.size(); ++i)
+		{
+			REQUIRE(coef[i] == Approx(0));
+		}
+	}
+	
+	SECTION("vertices: not uniform, value: not equal")
+	{
+		mesh.read("bunny_sphere.obj");
+	
+		// use same coefficient as http://takuyaokada.hatenablog.com/entry/20160218/1455758454 (written in python)
+		vector<double> coef_original = {10, 1, 2, 0, 1, 5, 3, 4, 0};
+		vector<double> data = mesh.SH_restoreData(coef_original);
+	
+		vector<double> coef = mesh.SH_expand(coef_original.size(), data);
+		for (size_t i = 0; i < coef.size(); ++i)
+		{
+			REQUIRE(coef[i] == Approx(coef_original[i]));
+		}
+	}
 }
