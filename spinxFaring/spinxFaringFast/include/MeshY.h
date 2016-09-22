@@ -77,7 +77,11 @@ class Mesh
       
       vector<double> returnRho( void);
 
-      vector<double> SH_innerProduct(int n_coef, const vector<double> &data) const;
+      vector<double> SH_expand(int n_coef, const vector<double> &data) const;
+      // spherical harmonics expansion
+
+      vector<double> SH_restoreData(const vector<double> &coef) const;
+      // restores data from given coefficients
 
    protected:
 

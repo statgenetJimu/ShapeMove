@@ -51,8 +51,15 @@ int main( int argc, char **argv )
    }
   
    // spherical harmonic expansion 
-   std::vector<double> data(meshY.vertices.size(), 0.28209479177387814); // 1/2/pi^(0.5)
-   std::vector<double> coef = meshY.SH_innerProduct(10, data);
+   //std::vector<double> data(meshY.vertices.size(), 0.28209479177387814); // 1/2/pi^(0.5)
+   std::vector<double> data(meshY.vertices.size());
+   std::ifstream in("rho.txt");
+   for (auto &i: data)
+   {
+      in >> i;
+   }
+
+   std::vector<double> coef = meshY.SH_expand(50, data);
    std::ofstream out("coef.txt");
    for (auto c : coef)
    {

@@ -9,13 +9,15 @@
 #include <array>
 #include <cmath>
 #include <cassert>
-#include <boost/math/special_functions/spherical_harmonic.hpp>
+#include <functional>
 #include "MeshY.h"
 #include "VectorY.h"
 #include "LinearSolverY.h"
 #include "EigenSolverY.h"
 #include "UtilityY.h"
+#include "spherical_harmonic.h"
 
+#include <numeric>
 
 namespace spiny{
 extern cm::Common cc;
@@ -431,17 +433,14 @@ void Mesh :: write( const string& filename )
 }
 
 // -----------------------------------------------------------------------------
-// Spherical Harmonic Projection
-// added:
-// #include "VectorY.h"
-// #include <boost/math/special_functions/spherical_harmonic.hpp>
-// #include <array>
-// #include <cmath>
-// #include <cassert>
+// Spherical Harmonic Expansion
+// need:
+// "VectorY.h", "QuaternionY.h"
+// "spherical_harmonic.h"
+// <vector>, <array>, <cmath>, <cassert>, <functional>
 // see document for mathematical settings
-std::vector<double> Mesh :: SH_innerProduct(int n_coef, const std::vector<double> &data) const
+vector<double> Mesh :: SH_expand(int n_coef, const std::vector<double> &data) const
 {
-	using namespace std;
 	const double pi = 3.1415926535897932384626433832795028841971;
 
 	// input validation
@@ -453,11 +452,13 @@ std::vector<double> Mesh :: SH_innerProduct(int n_coef, const std::vector<double
 	for (size_t i = 0; i < nV; i++)
 	{
 		Quaternion q = vertices[i];
-		vertices_on_S2[i][0] = q[1] / q.im().norm(); 
-		vertices_on_S2[i][1] = q[2] / q.im().norm();
-		vertices_on_S2[i][2] = q[3] / q.im().norm();
+		vertices_on_S2[i] = q.im() / q.im().norm();
+		// test code for vertices_on_S2
+		//Vector v = q.im() / q.im().norm();
+		//cout.precision(20);
+		//cout << q.im() << " " << q.im().norm() << " " << v.norm() << " " << (v.norm()==1?"1":"not") << "\n";
+		//assert(abs(v.norm()-1) < 0.0000000000001);
 	}
-
 	// face angle on triangloid, which is a face projected onto S2
 	// arguments: index to Vertices (0 <= i < nV)
 	function< double(int,int,int) > face_angle = [&](int pivot, int ind0, int ind1)
@@ -465,6 +466,7 @@ std::vector<double> Mesh :: SH_innerProduct(int n_coef, const std::vector<double
 		auto P = vertices_on_S2[pivot];
 		auto V0 = vertices_on_S2[ind0];
 		auto V1 = vertices_on_S2[ind1];
+		// extract orthogonal part only
 		Vector v0 = V0 - (P*V0) * P;
 		Vector v1 = V1 - (P*V1) * P;
 		return acos(v0*v1 / ( v0.norm() * v1.norm() ));
@@ -485,52 +487,66 @@ std::vector<double> Mesh :: SH_innerProduct(int n_coef, const std::vector<double
 			triangloid_area[f.vertex[i]] += area / 3;
 		}
 	}
+	// test code for triangloid_area
+	//cout.precision(20);
+	//cout << "area" << accumulate(triangloid_area.begin(), triangloid_area.end(), 0.) << '\n';
+	//assert(abs(accumulate(triangloid_area.begin(), triangloid_area.end(), 0.) - 4*pi) < 0.0000000001);
 
 	// SH projection
 	vector<double> coef(n_coef);
-	int l = 1, m = 0;
+	size_t l = 1, m = 0, i = 0;
 	// continue until coef become full
-	while (l*l - l + m + 1 != n_coef)
+	while (i < static_cast<size_t>(n_coef))
 	{
 		double sum = 0;
-		for (size_t i = 0; i < nV; i++)
+		for (size_t j = 0; j < nV; ++j)
 		{
-			using namespace boost::math;
-			double x = vertices_on_S2[i][0];
-			double y = vertices_on_S2[i][1];
-			double z = vertices_on_S2[i][2];
-			double theta = acos(z);
-			double phi;
-			// classification to numerically correct
-			if (x == 0 && y == 0)
-				phi = 0;
-			else
-			{
-				double rx = x / sqrt(x*x + y*y);
-				double ry = y / sqrt(x*x + y*y);
-				if (abs(rx) < pi/4 && ry > 0)
-					phi = acos(rx);	
-				else if (abs(rx) < pi/4 && ry < 0)
-					phi = acos(rx) + pi;
-				else if (rx > 0)
-					if (y > 0) phi = asin(ry);
-					else phi = 2*pi + asin(ry);
-				else
-					phi = pi - asin(ry);
-			}
-			// integral(l-1 because the library define l as 0-origin)
-			sum += data[i] * spherical_harmonic_r(l-1, m, theta, phi) * triangloid_area[i];
+			double theta = vertices_on_S2[j].theta();
+			double phi = vertices_on_S2[j].phi();
+			sum += data[j] * sph(l, m, theta, phi) * triangloid_area[j];
 		}
-		coef[l*l - l + m] = sum;
-		
+		coef.at(i) = sum;
+
 		if (m == l - 1)
 		{
 			l += 1;
 			m = -l + 1;
 		}
-		else m += 1;
+		else
+			m += 1;
+		i = l*l - l + m;
 	}
 	return coef;
+}
+
+vector<double> Mesh::SH_restoreData(const vector<double>& coef) const
+{
+	vector<double> data(vertices.size());
+	
+	for (size_t i = 0; i != data.size(); ++i)
+	{
+		Vector vertex = Vector(vertices[i].im());
+		double theta = vertex.theta();
+		double phi = vertex.phi();
+	
+		size_t l = 1, m = 0, j = 0;
+		// restored data at a vertex
+		double val = 0;
+		while (j < coef.size())
+		{
+			val += coef[j] * sph(l, m, theta, phi);
+			if (m == l - 1)
+			{
+				l += 1;
+				m = -l + 1;
+			}
+			else
+				m += 1;
+			j = l*l - l + m;
+		}
+		data[i] = val;
+	}
+	return data;
 }
 
 }

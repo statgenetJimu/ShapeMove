@@ -47,6 +47,10 @@ class Vector
 
       // STORAGE ---------------------------------------------------------------
       double x, y, z; // components
+
+      // SPHERICAL COORDINATE SYSTEM
+      double theta( void ) const;
+      double phi( void ) const;
 };
 
 // VECTOR SPACE OPERATIONS -----------------------------------------------

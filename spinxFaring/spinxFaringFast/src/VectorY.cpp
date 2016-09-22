@@ -182,4 +182,34 @@ std::ostream& operator<<( std::ostream& os, const Vector& o )
 
    return os;
 }
+
+double Vector::theta( void ) const
+{
+   if ( this->norm2() == 0 )
+      return 0;
+   else
+      return acos( z / this->norm() );
+}
+
+double Vector::phi( void ) const
+{
+   const double pi = 3.1415926535897932384626433832795028841971;
+   // classification to be numerically correct
+   if ( x == 0 && y == 0 )
+      return 0;
+   else
+   {
+      double rx = x / sqrt(x*x + y*y);
+      double ry = y / sqrt(x*x + y*y);
+      if ( abs(rx) < pi/4 && ry > 0 )
+         return acos(rx);
+      else if ( abs(rx) < pi/4 && ry < 0 )
+         return acos(rx) + pi;
+      else if ( rx > 0 )
+         if ( ry >= 0 ) return asin(ry);
+	 else return 2.*pi + asin(ry);
+      else
+         return pi - asin(ry);
+   }
+}
 }
