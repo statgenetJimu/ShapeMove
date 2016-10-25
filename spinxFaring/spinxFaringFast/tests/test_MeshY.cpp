@@ -19,8 +19,8 @@ template<class Type>
 ostream& operator<<(ostream& stream, const vector<Type>& vec)
 {
         stream << "[ ";
-        for (auto& i: vec) cout << i << " ";
-        cout << "]";
+        for (auto& i: vec) stream << i << " ";
+        stream << "]";
         return stream;
 }
 
@@ -28,8 +28,8 @@ template<class Type, size_t N>
 ostream& operator<<(ostream& stream, const array<Type, N>& arr)
 {
         stream << "[ ";
-        for (auto& i: arr) cout << i << " ";
-        cout << "]";
+        for (auto& i: arr) stream << i << " ";
+        stream << "]";
         return stream;
 }
 
